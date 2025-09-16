@@ -3,12 +3,19 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import EnrollButton from './enroll'
+import { Unbounded } from 'next/font/google'
+import { CalendarX } from 'lucide-react'
 
 interface ContentData {
     price: string
     originalPrice: string
     enrollLink: string
 }
+
+const shadowsIntoLight = Unbounded({
+    weight: '600',
+    subsets: ['latin']
+})
 
 export default function AboutSection() {
     const [content, setContent] = useState<ContentData>({
@@ -40,7 +47,7 @@ export default function AboutSection() {
     const achievements = [
         "Helped 12,000+ MSMEs automate operations",
         "TEDx + Josh Talks Speaker",
-        "Founder of AutomateBusiness",
+        "Founder of Zapllo",
         "Shared stage with Sanjeev Bikhchandani (Naukri.com)",
         "10+ years working closely with MSMEs like yours"
     ]
@@ -53,7 +60,7 @@ export default function AboutSection() {
     ]
 
     return (
-        <section className="py-20 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
+        <section className="py-10 relative mx-6 overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
             {/* Enhanced glassmorphism background elements */}
             <div className="absolute inset-0 opacity-60">
                 <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-to-r from-blue-400/60 to-purple-500/60 rounded-full blur-2xl animate-pulse"></div>
@@ -69,9 +76,9 @@ export default function AboutSection() {
                         <div className="inline-block backdrop-blur-md bg-blue-600/90 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6">
                             Know Your Coach
                         </div>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
+                         <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
                             <span className="text-blue-600">Shubhodeep Banerjee</span>
-                        </h2>
+                        </h1>
                         <p className="text-xl md:text-2xl text-gray-600 font-medium mb-6">
                             India's Leading Business Automation Coach
                         </p>
@@ -94,21 +101,21 @@ export default function AboutSection() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-3xl blur-2xl"></div>
                                 <div className="relative max-w-md mx-auto">
                                     <Image
-                                        src="https://lp.launchatscale.com/wp-content/uploads/2024/05/Shubh_pro-1024x1024.png"
+                                        src="/deep.png"
                                         alt="Shubhodeep Banerjee - Business Automation Coach"
                                         width={1024}
                                         height={1024}
-                                        className="w-full h-auto rounded-2xl shadow-xl"
+                                        className="w-full h-auto ml-8 rounded-2xl "
                                     />
                                 </div>
                             </div>
 
                             {/* Hosted by badge */}
-                            <div className="mt-6 text-center">
-                                <div className="backdrop-blur-md bg-green-600/90 text-white px-6 py-3 rounded-full inline-block">
-                                    <p className="text-sm font-medium">Hosted by:</p>
-                                    <p className="font-bold">Shubhodeep Banerjee</p>
-                                    <p className="text-xs opacity-90">India's Leading Business Automation Coach</p>
+                            <div className="mt-  text-center">
+                                <div className="backdrop-blur-md bg-green-200 text-black px-6 py-3 rounded-xl inline-block">
+                                    <p className="text-base font-medium">Hosted by:</p>
+                                    <p className="font-bold text-lg">Shubhodeep Banerjee</p>
+                                    <p className="text-base opacity-90">India’s #1 AI Growth Coach for MSMEs</p>
                                 </div>
                             </div>
                         </div>
@@ -137,34 +144,44 @@ export default function AboutSection() {
                     </div>
                 </div>
 
-                {/* Call to Action Section */}
-                <div className="text-center">
-                    <div className="backdrop-blur-2xl bg-white/40 border-2 border-white/70 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5 max-w-2xl mx-auto">
-                        <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-                            <span className="text-yellow-600">⭐</span> Learn from India's #1 Automation Expert
-                        </h3>
-
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-center gap-4">
-                                <span className="text-3xl text-gray-400 line-through">{content.originalPrice}</span>
-                                <span className="text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                                    {content.price}
-                                </span>
-                            </div>
+               {/* Pricing Glassmorphism Card */}
+                        <div className="flex justify-center mt-4 p-3">
 
                             <EnrollButton
-                                price={content.price}
-                                originalPrice={content.originalPrice}
-                                buttonText="LEARN FROM SHUBHODEEP"
-                                className="transform hover:scale-105 transition-all duration-300"
+                                price="₹97"
+                                originalPrice="₹999"
+                                buttonText="GET MY SPOT FOR ₹97"
+                                className=""
                             />
-
-                            <p className="text-sm text-gray-500 italic">
-                                Join the masterclass with India's #1 automation expert
-                            </p>
                         </div>
-                    </div>
-                </div>
+                        {/* Progress bar */}
+                        <div className="">
+                            <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
+                                style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
+                                {Array.from({ length: 22 }).map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className={
+                                            'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
+                                            (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
+                                        }
+                                    >
+                                        {i >= 20 && (
+                                            <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
+                                                ✔
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
+                                <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
+                                <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
+                            </div>
+                        </div>
+               
+
             </div>
 
             {/* Custom CSS for enhanced glassmorphism */}

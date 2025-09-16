@@ -1,5 +1,6 @@
 import AboutSection from '@/components/AboutSection'
 import AgendaSection from '@/components/AgendaSection'
+import AITransformationSection from '@/components/AITransformationSection'
 import BonusSection from '@/components/BonusSection'
 import ClientsSlider from '@/components/ClientSection'
 import FAQSection from '@/components/FAQSection'
@@ -24,15 +25,22 @@ export default function Home({ }) {
             <ClientsSlider />
             <ReadyToBuySection />
             {/* <ReverseFunnelSection /> */}
+            <div className='bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
+              <AITransformationSection />
+            </div>
             <AgendaSection />
             <div className='bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100'>
               <TsunamiSection />
             </div>
             <div className='bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100'>
-            <BonusSection />
+              <BonusSection />
             </div>
             <FinalCTASection />
-            <AboutSection />
+            <div className='bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100'>
+
+              <AboutSection />
+            </div>
+
             <FAQSection />
             <FooterSection />
             <StickyBottomCTA />

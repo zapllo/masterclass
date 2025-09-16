@@ -3,12 +3,112 @@
 import { useEffect, useState } from 'react'
 import EnrollButton from './enroll'
 import { ArrowDown, CalendarX, Languages } from 'lucide-react'
+import { Outfit, Shadows_Into_Light, Unbounded } from 'next/font/google'
 
 interface ContentData {
     price: string
     originalPrice: string
     enrollLink: string
 }
+
+
+
+const shadowsIntoLight = Unbounded({
+    weight: '600',
+    subsets: ['latin']
+})
+
+const outfit = Outfit({
+    weight: '400',
+    subsets: ['latin']
+})
+
+
+const AnimatedArrow = ({ className = "" }: { className?: string }) => (
+    <div className={`inline-block ${className}`}>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 500 500"
+            width="60"
+            height="60"
+            preserveAspectRatio="xMidYMid meet"
+            className="w-12 h-12 sm:w-16 sm:h-16"
+        >
+            <defs>
+                <clipPath id="__lottie_element_38">
+                    <rect width="500" height="500" x="0" y="0"></rect>
+                </clipPath>
+            </defs>
+            <g clipPath="url(#__lottie_element_38)">
+                <g transform="matrix(0.9999986290931702,0,0,0.9999986290931702,0.000244140625,0.000579833984375)" opacity="1">
+                    <g opacity="1" transform="matrix(1,0,0,1,165.5489959716797,408.22698974609375)">
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            fillOpacity="0"
+                            stroke="rgb(255,3,3)"
+                            strokeOpacity="1"
+                            strokeWidth="13"
+                            d="M-22.608999252319336,-10.553000450134277 C-22.608999252319336,-10.553000450134277 10.477999687194824,25.02899932861328 10.477999687194824,25.02899932861328 C14.522000312805176,8.343000411987305 18.565000534057617,-8.343000411987305 22.608999252319336,-25.02899932861328"
+                            style={{
+                                animation: 'arrowHeadAppear 3s ease-in-out infinite'
+                            }}
+                        />
+                    </g>
+                </g>
+                <g transform="matrix(1,0,0,1,0,0)" opacity="1">
+                    <g opacity="1" transform="matrix(1,0,0,1,249.40199279785156,242.52999877929688)">
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            fillOpacity="0"
+                            stroke="rgb(255,3,3)"
+                            strokeOpacity="1"
+                            strokeWidth="13"
+                            d="M160.60000610351562,-173.0290069580078 C-76.98200225830078,-178.9709930419922 -158.76100158691406,-174.7209930419922 -159.39999389648438,-165.91799926757812 C-160.60000610351562,-149.406005859375 123.46099853515625,-113.99199676513672 121.48899841308594,-87.69499969482422 C120.177001953125,-70.2040023803711 -5.004000186920166,-92.18800354003906 -63.400001525878906,-23.695999145507812 C-107.53600311279297,28.070999145507812 -96.47000122070312,111.5250015258789 -77.62300109863281,178.97000122070312"
+                            style={{
+                                animation: 'drawArrowPath 3s ease-in-out infinite'
+                            }}
+                        />
+                    </g>
+                </g>
+            </g>
+        </svg>
+
+        <style jsx>{`
+            @keyframes drawArrowPath {
+                0% {
+                    stroke-dasharray: 0 1000;
+                    stroke-dashoffset: 0;
+                }
+                50% {
+                    stroke-dasharray: 1000 1000;
+                    stroke-dashoffset: 0;
+                }
+                100% {
+                    stroke-dasharray: 0 1000;
+                    stroke-dashoffset: -1000;
+                }
+            }
+
+            @keyframes arrowHeadAppear {
+                0% {
+                    opacity: 0;
+                }
+                70% {
+                    opacity: 0;
+                }
+                75% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+        `}</style>
+    </div>
+)
+
 
 export default function ReadyToBuySection() {
     const [content, setContent] = useState<ContentData>({
@@ -100,9 +200,14 @@ export default function ReadyToBuySection() {
                                 <span className="text-blue-600 font-bold text-sm">⚡ TRANSFORMATION GUARANTEED</span>
                             </div>
 
-                            <h3 className="text-3xl md:text-4xl lg:text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight max-w-4xl mx-auto">
+                            <h3 className={`text-3xl md:text-4xl lg:text-3xl font-bold  bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight max-w-4xl mx-auto  ${shadowsIntoLight.className}`}>
                                 In Just 90 Minutes, Install the AI Framework That Cuts Costs, Saves Time & Puts Your Business on Autopilot.
                             </h3>
+                            <div>
+                                <p className={`${outfit.className} text-2xl font- -800 max-w-2xl mx-auto leading-`}>
+                                    This is the AI growth blueprint smart MSMEs are secretly using to 2X–5X profits (and you’ve never been told…)
+                                </p>
+                            </div>
                         </div>
                     </div>
                     {/* Main Heading */}
@@ -120,7 +225,9 @@ export default function ReadyToBuySection() {
                             <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-4">
                                 From Chaos to Control
                             </h2>
-                            <div className="w-20 h-1 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 mx-auto rounded-full"></div>
+                            <div className='flex justify-center '>
+                                <div className="w-40  h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 rounded-full"></div>
+                            </div>
                         </div>
 
                         <div className="grid lg:grid-cols-2 gap-8 items-stretch">
@@ -143,13 +250,32 @@ export default function ReadyToBuySection() {
                                     <div className="space-y-6">
                                         {/* Pain Points */}
                                         <div className="space-y-4">
-                                            <ProblemPoint text="Constant WhatsApp chasing for updates" />
-                                            <ProblemPoint text="Every decision bottlenecks through you" />
-                                            <ProblemPoint text="Tasks fall through the cracks daily" />
-                                            <ProblemPoint text="No clear accountability structure" />
-                                            <ProblemPoint text="Team operates in reactive mode" />
-                                            <ProblemPoint text="Growth feels impossible to manage" />
+                                            <ProblemPoint
+                                                text="Constant WhatsApp chasing for updates"
+                                                description="Endless follow-ups eating your time"
+                                            />
+                                            <ProblemPoint
+                                                text="Every decision bottlenecks through you"
+                                                description="Team can't move without your approval"
+                                            />
+                                            <ProblemPoint
+                                                text="Tasks fall through the cracks daily"
+                                                description="No system to track completion"
+                                            />
+                                            <ProblemPoint
+                                                text="No clear accountability structure"
+                                                description="Blame games when things go wrong"
+                                            />
+                                            <ProblemPoint
+                                                text="Team operates in reactive mode"
+                                                description="Always firefighting, never planning"
+                                            />
+                                            <ProblemPoint
+                                                text="Growth feels impossible to manage"
+                                                description="More clients = more chaos"
+                                            />
                                         </div>
+
 
                                         {/* Impact Statement */}
                                         <div className="backdrop-blur-lg bg-red-100/60 border-2 border-red-300/60 rounded-2xl p-6 shadow-lg mt-6">
@@ -237,14 +363,22 @@ export default function ReadyToBuySection() {
                         </div>
 
                         {/* Transformation Arrow */}
-                        <div className="flex justify-center my-8">
-                            <div className="backdrop-blur-xl bg-white/40 border-2 border-white/60 rounded-full p-4 shadow-xl">
-                                <div className="text-4xl animate-pulse"><ArrowDown/></div>
+                        <div className=" my-4 ">
+                            <div className='md:grid grid-cols-3 mb-12 hidden '>
+                                <div className='relative mb-16'>
+                                    <AnimatedArrow className='scale-125 ml-56 mt-6 absolute' />
+                                </div>
+                                <div className='relative'>
+                                    <AnimatedArrow className='scale-125 ml-36 mt-6 absolute rotate-[360deg]' />
+                                </div>
+                                <div className='relative'>
+                                    <AnimatedArrow className='scale-125  ml-24 mt-6 absolute' />
+                                </div>
                             </div>
                         </div>
 
                         {/* Transformation Promise */}
-                        <div className="text-center max-w-3xl mx-auto">
+                        <div className="text-center mt-12 max-w-3xl mx-auto">
                             <div className="backdrop-blur-2xl bg-gradient-to-r from-blue-50/40 to-purple-50/40 border-2 border-blue-200/50 rounded-3xl p-8 shadow-xl ring-1 ring-blue-100/30">
                                 <h3 className="text-2xl md:text-3xl font-bold mb-4">
                                     <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -262,41 +396,41 @@ export default function ReadyToBuySection() {
 
 
                 {/* Pricing & CTA Section */}
- <div className="flex justify-center mt-4 p-3">
+                <div className="flex justify-center mt-4 p-3">
 
-                            <EnrollButton
-                                price="₹97"
-                                originalPrice="₹999"
-                                buttonText="GET MY SPOT FOR ₹97"
-                                className=""
-                            />
-                        </div>
-                        {/* Progress bar */}
-                        <div className="">
-                            <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
-                                style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
-                                {Array.from({ length: 22 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className={
-                                            'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
-                                            (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
-                                        }
-                                    >
-                                        {i >= 20 && (
-                                            <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
-                                                ✔
-                                            </span>
-                                        )}
-                                    </div>
-                                ))}
+                    <EnrollButton
+                        price="₹97"
+                        originalPrice="₹999"
+                        buttonText="GET MY SPOT FOR ₹97"
+                        className=""
+                    />
+                </div>
+                {/* Progress bar */}
+                <div className="">
+                    <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
+                        style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
+                        {Array.from({ length: 22 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={
+                                    'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
+                                    (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
+                                }
+                            >
+                                {i >= 20 && (
+                                    <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
+                                        ✔
+                                    </span>
+                                )}
                             </div>
+                        ))}
+                    </div>
 
-                            <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
-                                <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
-                                <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
-                            </div>
-                        </div>
+                    <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
+                        <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
+                        <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
+                    </div>
+                </div>
 
                 {/* Bottom Statement */}
                 <div className="text-center mt-16">
@@ -346,16 +480,24 @@ function FrameworkPoint({ title, description }: { title: string; description: st
 
 /* ============== Custom Components ============== */
 
-function ProblemPoint({ text }: { text: string }) {
+
+// ... existing code ...
+
+function ProblemPoint({ text, description }: { text: string; description: string }) {
     return (
-        <div className="flex items-start gap-3 p-3 backdrop-blur-lg bg-red-100/40 border border-red-200/60 rounded-xl shadow-sm">
-            <div className="flex-shrink-0 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mt-0.5 shadow-sm">
-                <span className="text-white text-xs font-bold">×</span>
+        <div className="flex items-start gap-4 p-4 backdrop-blur-lg bg-red-100/40 border border-red-200/60 rounded-xl shadow-sm">
+            <div className="flex-shrink-0 w-8 h-8 bg-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white text-sm font-bold">×</span>
             </div>
-            <p className="text-gray-700 text-sm font-medium leading-relaxed">{text}</p>
+            <div>
+                <h4 className="text-gray-800 font-bold text-sm mb-1">{text}</h4>
+                <p className="text-gray-600 text-xs leading-relaxed">{description}</p>
+            </div>
         </div>
     )
 }
+
+// ... existing code ...
 
 function SolutionPoint({ icon, title, description }: { icon: string; title: string; description: string }) {
     return (

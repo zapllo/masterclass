@@ -3,12 +3,21 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import EnrollButton from './enroll'
+import { Unbounded } from 'next/font/google'
+import { CalendarX } from 'lucide-react'
 
 interface ContentData {
     price: string
     originalPrice: string
     enrollLink: string
 }
+
+
+const shadowsIntoLight = Unbounded({
+    weight: '600',
+    subsets: ['latin']
+})
+
 
 export default function BonusSection() {
     const [content, setContent] = useState<ContentData>({
@@ -87,7 +96,7 @@ export default function BonusSection() {
     }, 0)
 
     return (
-        <section className="py-20 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 mx-6">
+        <section className="py-10 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 mx-6">
             {/* Enhanced glassmorphism background elements */}
             <div className="absolute inset-0 opacity-60">
                 <div className="absolute top-1/5 left-1/6 w-96 h-96 bg-gradient-to-r from-blue-400/60 to-purple-500/60 rounded-full blur-2xl animate-pulse"></div>
@@ -99,14 +108,14 @@ export default function BonusSection() {
             <div className="relative z-10 container mx-auto px-4 max-w-7xl">
                 {/* Header Section */}
                 <div className="text-center mb-16">
-                    <div className="backdrop-blur-2xl bg-white/35 border-2 border-white/60 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5">
+                    <div className="te/60 rounded-3xl p-8  ring-black/5">
                         <div className="inline-block backdrop-blur-md bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold mb-6">
                             🎁 EXCLUSIVE BONUSES
                         </div>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
-                            Get <span className="text-yellow-600">₹1,08,000 Worth</span> of
+                        <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
+                            Get <span className="">₹1,08,000 Worth</span> of
                             <br />Business Automation Tools
-                        </h2>
+                        </h1>
                         <p className="text-xl text-gray-600 font-medium mb-6">
                             Everything you need to build a completely automated, profitable business
                         </p>
@@ -119,13 +128,13 @@ export default function BonusSection() {
 
                     {/* Hero Bonus Image */}
                     <div className="mt-12">
-                        <div className="backdrop-blur-2xl bg-white/30 border-2 border-white/50 rounded-3xl p-6 shadow-2xl ring-1 ring-black/5 max-w-2xl mx-auto">
+                        <div className="0 rounded-3xl p-6 -2xl  max-w-2xl mx-auto">
                             <Image
                                 src="https://lp.launchatscale.com/wp-content/uploads/2025/02/9222d943181e28e25f5b5afe9ad302d5_1200_80-1024x576.webp"
                                 alt="Business Automation Bonus Package"
                                 width={1024}
                                 height={576}
-                                className="w-full h-auto rounded-2xl shadow-xl"
+                                className="w-full h-auto rounded-2xl -xl"
                             />
                         </div>
                     </div>
@@ -139,13 +148,13 @@ export default function BonusSection() {
                 </div>
 
                 {/* Total Value Section */}
-                <div className="backdrop-blur-2xl bg-white/40 border-2 border-white/70 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5 mb-16">
+                <div className="backdrop-blur-2xl bg-white/40 border-2 border-white/70 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5 mb-4">
                     <div className="text-center">
                         <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
                             Total Bonus Value
                         </h3>
                         <div className="flex items-center justify-center gap-6 mb-6">
-                            <span className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent line-through">
+                            <span className="text-4xl md:text-5xl font-bold text-red-600 line-through">
                                 ₹{totalValue.toLocaleString()}
                             </span>
                             <span className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
@@ -160,34 +169,44 @@ export default function BonusSection() {
 
                 {/* Final CTA */}
                 <div className="text-center">
-                    <div className="backdrop-blur-2xl bg-white/40 border-2 border-white/70 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5 max-w-2xl mx-auto">
-                        <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-                            Claim Your ₹1,08,000 Bonus Package
-                        </h3>
+                    <div className=" rounded-3xl p-8   max-w-2xl mx-auto">
 
-                        <div className="space-y-6">
-                            <div className="backdrop-blur-md bg-red-50/80 border border-red-200/60 rounded-2xl p-6">
-                                <p className="text-red-700 font-bold text-lg mb-4">
-                                    ⚡ This bonus package expires in 24 hours
-                                </p>
-                                <div className="flex items-center justify-center gap-4">
-                                    <span className="text-3xl text-gray-400 line-through">{content.originalPrice}</span>
-                                    <span className="text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                                        {content.price}
-                                    </span>
-                                </div>
-                            </div>
+
+                        {/* Pricing & CTA Section */}
+                        <div className="flex justify-center mt-4 p-3">
 
                             <EnrollButton
-                                price={content.price}
-                                originalPrice={content.originalPrice}
-                                buttonText="GET BONUSES + MASTERCLASS"
-                                className="transform hover:scale-105 transition-all duration-300 text-lg py-5 px-8"
+                                price="₹97"
+                                originalPrice="₹999"
+                                buttonText="GET MY SPOT FOR ₹97"
+                                className=""
                             />
+                        </div>
+                        {/* Progress bar */}
+                        <div className="">
+                            <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
+                                style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
+                                {Array.from({ length: 22 }).map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className={
+                                            'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
+                                            (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
+                                        }
+                                    >
+                                        {i >= 20 && (
+                                            <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
+                                                ✔
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
 
-                            <p className="text-sm text-gray-500 italic">
-                                Bonuses are automatically included with your registration
-                            </p>
+                            <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
+                                <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
+                                <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -226,14 +245,14 @@ function BonusCard({ title, description, value, image, icon }: {
                 />
 
                 {/* Icon overlay */}
-                <div className="absolute top-4 left-4 backdrop-blur-sm bg-white/80 rounded-full p-3 shadow-lg">
+                {/* <div className="absolute top-4 left-4 backdrop-blur-sm bg-white/80 rounded-full p-3 shadow-lg">
                     <span className="text-2xl">{icon}</span>
-                </div>
+                </div> */}
 
                 {/* Value badge */}
-                <div className="absolute top-4 right-4 backdrop-blur-sm bg-green-500/90 text-white px-3 py-2 rounded-full text-sm font-bold shadow-lg">
+                {/* <div className="absolute top-4 right-4 backdrop-blur-sm bg-green-500/90 text-white px-3 py-2 rounded-full text-sm font-bold shadow-lg">
                     {value}
-                </div>
+                </div> */}
             </div>
 
             {/* Content Section */}
@@ -243,8 +262,8 @@ function BonusCard({ title, description, value, image, icon }: {
 
                 {/* FREE Badge */}
                 <div className="text-center">
-                    <div className="backdrop-blur-sm bg-red-500/90 text-white px-4 py-2 rounded-full text-sm font-bold inline-block shadow-lg">
-                        FREE TODAY ONLY
+                    <div className="backdrop-blur-sm bg-green-200 -500/90 text-black px-4 py-2 rounded-full text-sm font-bold inline-block shadow-lg">
+                        <span className='line-through'>  {value}</span> FREE For Today
                     </div>
                 </div>
             </div>

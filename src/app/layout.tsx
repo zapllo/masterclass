@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Instrument_Sans } from "next/font/google";
+import { Instrument_Sans, Outfit } from "next/font/google";
 import "./globals.css";
 import TrackingScripts from "@/components/TrackingScripts";
 
-const instrumentSans = Instrument_Sans({
+const instrumentSans = Outfit({
   variable: "--font-instrument-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],

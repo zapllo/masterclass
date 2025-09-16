@@ -3,6 +3,7 @@
 import { useEffect, useId, useMemo, useState } from 'react'
 import EnrollButton from './enroll'
 import { Calendar, CalendarOff, CalendarX, Clock, Globe, Languages, Phone } from 'lucide-react'
+import { Outfit, Unbounded } from 'next/font/google'
 
 interface ContentData {
     eventDate: string
@@ -13,6 +14,18 @@ interface ContentData {
     heroVideoPoster: string
 }
 
+
+const shadowsIntoLight = Unbounded({
+    weight: '600',
+    subsets: ['latin']
+})
+
+const outfit = Outfit({
+    weight: '400',
+    subsets: ['latin']
+})
+
+
 export default function HeroSection() {
     const [content, setContent] = useState<ContentData>({
         eventDate: '29th – 31st Aug',
@@ -20,7 +33,7 @@ export default function HeroSection() {
         eventLocation: 'Online',
         eventLanguage: 'English',
         heroVideoUrl: 'https://lp.launchatscale.com/wp-content/uploads/2025/06/C3926-YT.mp4',
-        heroVideoPoster: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Shubh-Jain-thum1-1-1.avif'
+        heroVideoPoster: '/thumbnail.jpg'
     })
     const [loading, setLoading] = useState(true)
 
@@ -86,13 +99,13 @@ export default function HeroSection() {
                     <div className="text-center space-y-6">
                         {/* <img src='https://www.zapllo.com/logo.png' className='h-16 mx-auto mb-4' /> */}
                         <div className='flex justify-center items-center gap-2'>
-                            <h1 className="text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight">
+                            <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
                                 Cut 30% of Your Operational Costs
                             </h1>
                             <img src='/rocket.png' className='h-20' />
                         </div>
 
-                        <h2 className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-800 leading-tight">
+                        <h2 className={`text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 ${outfit.className} leading-tight`}>
                             with India's 1st AI Co-Manager for MSMEs
                         </h2>
 
@@ -103,22 +116,22 @@ export default function HeroSection() {
 
                         </div>
                         {/* Sub Headline */}
-                        {/* <div className="space-y-4 max-w-2xl mx-auto">
-                            <div className="backdrop-blur-xl bg-red-50/60 border-2 border-red-200/60 rounded-2xl p-6 shadow-xl">
+                        <div className="space-y-4 max-w- mb-4 mx-auto">
+                            <div className="">
                                 <p className="text-lg md:text-lg text-gray-700 font-medium">
-                                    <span className="font-bold text-red-600">Old Way:</span> Hire more managers, chase your team, and drown in follow-ups.
+                                    <span className="font- text--600">❌ Old Way:</span> Hire more managers, chase your team, and drown in follow-ups.
                                 </p>
                             </div>
 
-                            <div className="backdrop-blur-xl bg-green-50/60 border-2 border-green-200/60 rounded-2xl p-6 shadow-xl">
+                            <div className="">
                                 <p className="text-lg md:text-lg text-gray-700 font-medium">
-                                    <span className="font-bold text-green-600">New Way:</span> Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly.
+                                    <span className="font- text--600">✅ New Way:</span> Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly.
                                 </p>
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
-                <div className='flex justify-center'>
+                <div className='flex justify-center mt-4'>
                     <div className="grid grid-cols-3 mb-4 gap-4">
                         <BenefitCard text="Stop Being the “Chief Follow-Up Officer”" />
                         <BenefitCard text="Turn Chaos into Systems & Accountability" />
@@ -126,11 +139,11 @@ export default function HeroSection() {
                     </div>
                 </div>
                 {/* Header Alert */}
-                <div className="text-center  mt-6">
+                <div className="text-center mb-4  mt-6">
                     <div className="inline-flex items-center backdrop-blur-2xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border-2 border-orange-300/60 rounded-full px-6 py-3 shadow-2xl ring-1 ring-orange-200/30 hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
                         <div className="flex items-center gap-3">
                             <div className="relative">
-                                <span className="text-2xl animate-bounce">🔥</span>
+                                <span className="text-lg animate-bounce">🔥</span>
                                 {/* <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div> */}
                             </div>
                             <span className="text-orange-700 font-bold text-sm md:text-base lg:text-sm tracking-wide uppercase">

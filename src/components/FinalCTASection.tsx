@@ -2,12 +2,21 @@
 
 import { useEffect, useState } from 'react'
 import EnrollButton from './enroll'
+import { CalendarX } from 'lucide-react'
+import { Unbounded } from 'next/font/google'
 
 interface ContentData {
     price: string
     originalPrice: string
     enrollLink: string
 }
+const shadowsIntoLight = Unbounded({
+    weight: '600',
+    subsets: ['latin']
+})
+
+
+
 
 export default function FinalCTASection() {
     const [content, setContent] = useState<ContentData>({
@@ -76,7 +85,7 @@ export default function FinalCTASection() {
     ]
 
     return (
-        <section className="py-20 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
+        <section className="py-10 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
             {/* Enhanced glassmorphism background elements */}
             <div className="absolute inset-0 opacity-60">
                 <div className="absolute top-1/5 left-1/6 w-96 h-96 bg-gradient-to-r from-blue-400/60 to-purple-500/60 rounded-full blur-2xl animate-pulse"></div>
@@ -89,11 +98,11 @@ export default function FinalCTASection() {
                 {/* Main Header */}
                 <div className="text-center mb-16">
                     <div className="backdrop-blur-2xl bg-white/35 border-2 border-white/60 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5">
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
+                         <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
                             Don't Miss This <span className="text-red-600">Game-Changing</span>
                             <br />Opportunity
-                        </h2>
-                        <p className="text-xl text-gray-600 font-medium max-w-4xl mx-auto">
+                        </h1>
+                        <p className="text-xl text-gray-600 mt-4 font-medium max-w-4xl mx-auto">
                             Join successful entrepreneurs who are already using these automation secrets to build
                             <span className="text-blue-600 font-bold"> 7-figure businesses </span>
                             while working less than 30 hours per week
@@ -124,56 +133,47 @@ export default function FinalCTASection() {
                 </div>
 
                 {/* Main CTA Section */}
-                <div className="backdrop-blur-2xl bg-white/40 border-2 border-white/70 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5 mb-16">
-                    <div className="text-center space-y-8">
-                        {/* Pricing */}
-                        <div>
-                            <div className="text-gray-600 text-lg mb-2">Regular Price</div>
-                            <div className="flex items-center justify-center gap-6 mb-4">
-                                <span className="text-3xl text-gray-400 line-through">{content.originalPrice}</span>
-                                <span className="text-6xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                                    {content.price}
-                                </span>
-                            </div>
-                            <div className="backdrop-blur-md bg-red-50/80 border border-red-200/60 rounded-full px-6 py-3 inline-block">
-                                <span className="text-red-700 font-bold">🎯 Save ₹1,900 - Limited Time!</span>
-                            </div>
-                        </div>
+{/* Pricing & CTA Section */}
+                <div className="flex justify-center mt-4 p-3">
 
-                        {/* CTA Button */}
-                        <EnrollButton
-                            price={content.price}
-                            originalPrice={content.originalPrice}
-                            buttonText="SECURE MY SEAT NOW"
-                            className="transform hover:scale-105 transition-all duration-300 text-xl py-6 px-12"
-                        />
-
-                        {/* Features */}
-                        <div className="backdrop-blur-md bg-white/50 border border-white/60 rounded-2xl p-6">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                                🎯 What You Get When You Register:
-                            </h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {features.map((feature, index) => (
-                                    <FeatureItem key={index} text={feature} />
-                                ))}
+                    <EnrollButton
+                        price="₹97"
+                        originalPrice="₹999"
+                        buttonText="GET MY SPOT FOR ₹97"
+                        className=""
+                    />
+                </div>
+                {/* Progress bar */}
+                <div className="mb-10">
+                    <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
+                        style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
+                        {Array.from({ length: 22 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={
+                                    'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
+                                    (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
+                                }
+                            >
+                                {i >= 20 && (
+                                    <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
+                                        ✔
+                                    </span>
+                                )}
                             </div>
-                        </div>
+                        ))}
+                    </div>
 
-                        {/* Final Warning */}
-                        <div className="backdrop-blur-md bg-orange-50/80 border border-orange-200/60 rounded-2xl p-6">
-                            <p className="text-orange-800 font-bold text-lg">
-                                ⏰ <span className="text-red-600">Limited time offer</span> - This page closes when we reach capacity
-                            </p>
-                        </div>
+                    <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
+                        <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
+                        <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
                     </div>
                 </div>
-
                 {/* Social Proof */}
                 <div className="text-center">
                     <div className="backdrop-blur-2xl bg-white/30 border-2 border-white/50 rounded-2xl p-6 shadow-xl ring-1 ring-black/5">
                         <p className="text-lg text-gray-700 font-medium">
-                            Join <span className="text-blue-600 font-bold">1000+ entrepreneurs</span> who've already transformed their businesses
+                            Join <span className="text-blue-600 font-bold">20000+ entrepreneurs</span> who've already transformed their businesses
                         </p>
                     </div>
                 </div>

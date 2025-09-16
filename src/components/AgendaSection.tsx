@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import EnrollButton from './enroll'
+import { CalendarX } from 'lucide-react'
 
 interface ContentData {
     price: string
@@ -89,7 +90,7 @@ export default function AgendaSection() {
     const completionPercentage = (checkedCount / qualifications.length) * 100
 
     return (
-        <section className="py-20 relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <section className="py-4 relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             {/* Background Elements */}
             <div className="absolute inset-0 opacity-40">
                 <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-indigo-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -141,7 +142,7 @@ export default function AgendaSection() {
                 </div>
 
                 {/* Qualifications Grid */}
-                <div className="grid md:grid-cols-2 gap-6 mb-16">
+                <div className="grid md:grid-cols-2 gap-6 mb-4">
                     {qualifications.map((qualification, index) => (
                         <QualificationCard
                             key={index}
@@ -155,30 +156,23 @@ export default function AgendaSection() {
 
                 {/* CTA Section */}
                 <div className="text-center">
-                    <div className={`backdrop-blur-2xl border-2 rounded-3xl p-10 shadow-2xl max-w-3xl mx-auto transition-all duration-700 ${allChecked
-                            ? 'bg-gradient-to-br from-green-50/60 to-emerald-50/60 border-green-200/60 ring-4 ring-green-200/20'
-                            : 'bg-white/40 border-white/60'
+                    <div className={` rounded-3xl p-10  max-w-3xl mx-auto transition-all duration-700 ${allChecked
+                            ? ''
+                            : ''
                         }`}>
-                        {allChecked && (
-                            <div className="mb-6">
-                                <div className="inline-flex items-center gap-3 backdrop-blur-xl bg-green-500/20 border-2 border-green-300/60 rounded-full px-6 py-3 shadow-lg">
-                                    <span className="text-2xl animate-bounce">🎯</span>
-                                    <span className="text-green-700 font-bold text-lg">YOU'RE THE PERFECT CANDIDATE!</span>
-                                </div>
-                            </div>
-                        )}
 
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8">
+
+                        {/* <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8">
                             {allChecked
                                 ? 'Ready to Transform Your Leadership?'
                                 : checkedCount >= 3
                                     ? 'You\'re Almost There!'
                                     : 'Ready to Break Free from Daily Chaos?'
                             }
-                        </h2>
+                        </h2> */}
 
                         {/* Pricing */}
-                        <div className="space-y-6 mb-8">
+                        {/* <div className="space-y-6 mb-8">
                             <div className="flex items-center justify-center gap-6">
                                 <span className="text-3xl text-gray-400 line-through">{content.originalPrice}</span>
                                 <div className="text-center">
@@ -192,42 +186,48 @@ export default function AgendaSection() {
                             <div className="inline-block backdrop-blur-lg bg-orange-100/60 border-2 border-orange-200/60 rounded-full px-6 py-2">
                                 <span className="text-orange-700 font-bold">Limited Time: Save ₹902!</span>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* CTA Button */}
-                        <div className="space-y-4">
-                            <EnrollButton
-                                price={content.price}
-                                originalPrice={content.originalPrice}
-                                buttonText={
-                                    allChecked
-                                        ? "🚀 CLAIM MY EXCLUSIVE SPOT NOW"
-                                        : "SECURE MY TRANSFORMATION SPOT"
-                                }
-                                className={` -white font-bold py-6 px-8 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl ${allChecked ? 'animate-pulse ring-4 ring-blue-200/50' : ''
-                                    }`}
-                            />
+                        {/* Pricing Glassmorphism Card */}
+                        <div className="flex justify-center mt-4 p-3">
 
-                            <div className="flex items-center justify-center gap-2 text-gray-600">
-                                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                                <span className="text-sm font-medium">
-                                    {allChecked ? 'Priority booking for qualified leaders' : 'Only 50 seats available'}
-                                </span>
+                            <EnrollButton
+                                price="₹97"
+                                originalPrice="₹999"
+                                buttonText="GET MY SPOT FOR ₹97"
+                                className=""
+                            />
+                        </div>
+                        {/* Progress bar */}
+                        <div className="">
+                            <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
+                                style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
+                                {Array.from({ length: 22 }).map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className={
+                                            'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
+                                            (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
+                                        }
+                                    >
+                                        {i >= 20 && (
+                                            <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
+                                                ✔
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
+                                <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
+                                <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
                             </div>
                         </div>
 
-                        {/* Bottom Message */}
-                        <div className="mt-8 p-6 backdrop-blur-lg bg-blue-50/60 border-2 border-blue-200/60 rounded-2xl">
-                            <p className="text-blue-800 font-medium">
-                                {allChecked ? (
-                                    <>✨ You meet all criteria - this masterclass was designed specifically for leaders like you!</>
-                                ) : checkedCount >= 3 ? (
-                                    <>🎯 You're close! This session will help you bridge the gaps and accelerate your growth.</>
-                                ) : (
-                                    <>💡 Even if you don't check every box, you can still benefit from the frameworks we'll share.</>
-                                )}
-                            </p>
-                        </div>
+
+
                     </div>
                 </div>
             </div>
