@@ -20,8 +20,8 @@ const brands: Brand[] = Array.from({ length: 20 }, (_, index) => ({
 function BrandCard({ brand, isMobile }: { brand: Brand; isMobile: boolean }) {
     return (
         <article className={`${isMobile
-            ? 'min-w-[200px]  max-w-[200px] mx-2'
-            : 'mx-3 min-w-[180px] max-w-[180px]'
+            ? 'min-w-[200px]  max-w-[200px] md:mx-2'
+            : 'md:mx-3 min-w-[180px] max-w-[180px]'
             } flex-shrink-0 rounded-2xl mb-2 ition-all duration-300 transform hover:scale-105`}>
             <div className="mx-auto aspect-square w-full max-w-36 overflow- rounded-xl backdrop-blur-sm bg-white/50 p-4 shadow-lg">
                 <Image
@@ -226,7 +226,7 @@ export default function BrandsSlider() {
     }
 
     return (
-        <section className="w-full py-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
+        <section className="md:w-full py-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute inset-0 opacity-30">
                 <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-400/30 to-purple-500/30 rounded-full blur-3xl animate-pulse"></div>

@@ -112,7 +112,7 @@ export default function EnrollButton({
               onMouseLeave={() => setIsHovered(false)}
             >
               <span className="elementor-button-content-wrapper relative z-10">
-                <span className="elementor-button-text md:text-2xl text-[16px] items">
+                <span className="elementor-button-text md:text-2xl text-[16px] text-nowrap items">
                   ENROLL NOW @ {content.price}{' '}
                   <strike className="text-red-200 opacity-80">
                     {content.originalPrice}

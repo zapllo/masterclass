@@ -150,7 +150,7 @@ export default function ReadyToBuySection() {
                 {/* Header Section */}
                 <div className="text-center mb-16">
                     {/* Language & Audience Badge */}
-                    <div className="inline-block backdrop-blur-2xl bg-white/35 border-2 border-white/50 rounded-2xl px-8 py-6 w-full shadow-xl mb-8 ring-1 ring-white/30 max-w-2xl">
+                    <div className="inline-block  backdrop-blur-2xl bg-white/35 border-2 border-white/50 rounded-2xl px-8 py-6 w-full shadow-xl mb-8 ring-1 ring-white/30 md:max-w-2xl">
                         <div className="text-center space-y-4">
                             {/* Business Owners Only Badge */}
                             <div className="inline-flex items-center gap-2 backdrop-blur-xl bg-gradient-to-r from-red-500/20 to-orange-500/20 border-2 border-red-300/60 rounded-full px-4 py-2 shadow-lg">
@@ -200,11 +200,11 @@ export default function ReadyToBuySection() {
                                 <span className="text-blue-600 font-bold text-sm">⚡ TRANSFORMATION GUARANTEED</span>
                             </div>
 
-                            <h3 className={`text-3xl md:text-4xl lg:text-3xl font-bold  bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight max-w-4xl mx-auto  ${shadowsIntoLight.className}`}>
+                            <h3 className={`text-xl md:text-4xl lg:text-3xl font-bold  bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight max-w-4xl mx-auto  ${shadowsIntoLight.className}`}>
                                 In Just 90 Minutes, Install the AI Framework That Cuts Costs, Saves Time & Puts Your Business on Autopilot.
                             </h3>
                             <div>
-                                <p className={`${outfit.className} text-2xl font- -800 max-w-2xl mx-auto leading-`}>
+                                <p className={`${outfit.className} text-base md:text-2xl font- -800 max-w-2xl mx-auto leading-`}>
                                     This is the AI growth blueprint smart MSMEs are secretly using to 2X–5X profits (and you’ve never been told…)
                                 </p>
                             </div>
@@ -436,7 +436,7 @@ export default function ReadyToBuySection() {
                 <div className="text-center mt-16">
                     <div className="max-w-4xl mx-auto backdrop-blur-2xl bg-white/30 border-2 border-white/50 rounded-3xl p-10 shadow-xl ring-1 ring-white/30">
                         <h3 className="text-3xl md:text-4xl font-black text-gray-800 mb-6 leading-tight">
-                            This isn't just another webinar.
+                            This isn't just another masterclass.
                         </h3>
                         <p className="text-xl text-gray-700 leading-relaxed">
                             It's your blueprint to install a culture of

@@ -18,7 +18,7 @@ export default function Home({ }) {
     <div className=''>
       <div className='w-full top-0 absolute z-[5555] bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 overflow-hidden  flex justify-center'>
         <div>
-          <div className='overflow-hidden mx-4 w-screen'>
+          <div className='overflow-hidden md:mx-4 w-screen'>
             <HeroSection />
           </div>
           <div className='bg-[#F5F6F8] w-screen '>

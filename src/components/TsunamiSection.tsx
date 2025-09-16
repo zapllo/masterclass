@@ -136,10 +136,10 @@ export default function TsunamiSection() {
             <div className="relative z-10 container mx-auto px-4 max-w-7xl">
                 {/* Main Header */}
                 <div className="text-center mb-4">
-                    <div className=" rounded-3xl p-8  ring-1 ring-black/5">
-                        <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
-                            <span className="">Proven Results</span> Across
-                            <br />Every Major Industry
+                    <div className=" rounded-3xl p-8  ">
+                        <h1 className={`text-3xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
+                            <span className="">Proven Results</span> Across{' '}
+                            <br className='hidden md:block' />Every Major Industry
                         </h1>
                         <p className="text-xl mt-4 text-gray-600 font-medium">
                             From manufacturing floors to digital offices, our framework works everywhere
@@ -293,8 +293,8 @@ function AnimatedStatCard({
             {/* Animated progress ring for visual feedback */}
             <div className="absolute top-2 right-2 w-3 h-3">
                 <div className={`w-full h-full rounded-full transition-all duration-2500 ${hasAnimated
-                        ? 'bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse'
-                        : 'bg-gray-300'
+                    ? 'bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse'
+                    : 'bg-gray-300'
                     }`}></div>
             </div>
         </div>

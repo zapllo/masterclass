@@ -99,7 +99,7 @@ export default function FAQSection() {
                         Got Questions About
                         <br />
                         <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">
-                            AI Transformation?
+                            The Masterclass?
                         </span>
                     </h2>
 

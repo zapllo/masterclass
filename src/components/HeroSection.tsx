@@ -70,14 +70,14 @@ export default function HeroSection() {
     ]
 
     return (
-        <div className="min-h-screen relative mx-6 overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
+        <div className="min-h-screen relative md:mx-6 overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
 
 
             {/* Top ribbon */}
             <div className='w-full flex justify-center '>
                 <div className="backdrop-blur-2xl bg-white/30 border-2 border-white/50 md:px-5 px-5 text-nowrap md:py-4 py-[9px] rounded-t-none rounded-b-xl max-w-full shadow-2xl ring-1 ring-black/5">
-                    <h1 style={{ fontWeight: 600 }} className="text-gray-800 text-[17.6px] gap-2 flex items-center lg:text-lg text-center drop-shadow-sm">
-                        <img src={'/clock.png'} className='h-8' />
+                    <h1 style={{ fontWeight: 600 }} className="text-gray-800 text-sm max-w-sm   gap-2 flex items-center lg:text-lg text-center drop-shadow-sm">
+                        <img src={'/clock.png'} className='h-5 md:h-8' />
                         Give Me 90 Minutes & I&apos;ll Show You How To...
                     </h1>
                 </div>
@@ -99,13 +99,13 @@ export default function HeroSection() {
                     <div className="text-center space-y-6">
                         {/* <img src='https://www.zapllo.com/logo.png' className='h-16 mx-auto mb-4' /> */}
                         <div className='flex justify-center items-center gap-2'>
-                            <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
-                                Cut 30% of Your Operational Costs
+                            <h1 className={`text-3xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
+                                Cut 30% of Your Operational Costs <span className='text-white md:hidden'>🚀</span>
                             </h1>
-                            <img src='/rocket.png' className='h-20' />
+                            <img src='/rocket.png' className='md:h-20 hidden md:block' />
                         </div>
 
-                        <h2 className={`text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 ${outfit.className} leading-tight`}>
+                        <h2 className={`text-xl md:text-3xl lg:text-4xl font-bold text-gray-800 ${outfit.className} leading-tight`}>
                             with India's 1st AI Co-Manager for MSMEs
                         </h2>
 
@@ -118,13 +118,13 @@ export default function HeroSection() {
                         {/* Sub Headline */}
                         <div className="space-y-4 max-w- mb-4 mx-auto">
                             <div className="">
-                                <p className="text-lg md:text-lg text-gray-700 font-medium">
+                                <p className="text-base md:text-lg text-gray-700 font-medium">
                                     <span className="font- text--600">❌ Old Way:</span> Hire more managers, chase your team, and drown in follow-ups.
                                 </p>
                             </div>
 
                             <div className="">
-                                <p className="text-lg md:text-lg text-gray-700 font-medium">
+                                <p className="text-base md:text-lg text-gray-700 font-medium">
                                     <span className="font- text--600">✅ New Way:</span> Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly.
                                 </p>
                             </div>
@@ -132,11 +132,19 @@ export default function HeroSection() {
                     </div>
                 </div>
                 <div className='flex justify-center mt-4'>
-                    <div className="grid grid-cols-3 mb-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 mb-4 gap-4">
                         <BenefitCard text="Stop Being the “Chief Follow-Up Officer”" />
                         <BenefitCard text="Turn Chaos into Systems & Accountability" />
-                        <BenefitCard text="Save 3–5 Hours Every Single Day from Now" />
+                        <div className='hidden md:block '>
+                            <BenefitCard text="Save 3–5 Hours Every Single Day from Now" />
+                        </div>
+
                     </div>
+
+                </div>
+                <div className='flex justify-center md:hidden block'>
+                    <div className=''></div>
+                    <BenefitCard text="Save 3–5 Hours Every Single Day from Now" />
                 </div>
                 {/* Header Alert */}
                 <div className="text-center mb-4  mt-6">
@@ -186,9 +194,9 @@ export default function HeroSection() {
                                                     <IconComponent className="w-4 h-4 text-white" />
                                                 </div>
                                             </div>
-                                            <div className='text-start -mt-2'>
-                                                <div className="text-sm font-medium text-gray-500 uppercase tracking- mb-2">{detail.label}</div>
-                                                <div className="text-lg -mt-2 font-bold text-gray-800">{detail.value}</div>
+                                            <div className='text-start  -mt-2'>
+                                                <div className="text-[10px] md:text-sm font-medium text-gray-500 uppercase tracking- mb-2">{detail.label}</div>
+                                                <div className="text-sm md:text-lg -mt-2 font-bold text-gray-800">{detail.value}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -201,7 +209,7 @@ export default function HeroSection() {
 
                     </div>
                     {/* Left Content */}
-                    <div className="text-center  relative mt-32 lg:text-left ">
+                    <div className="text-center  relative md:mt-32 lg:text-left ">
 
                         <div className="absolute left-1/2 -top z-[100] -translate-x-1/2 -translate-y-1/2">
                             <img
@@ -249,7 +257,7 @@ export default function HeroSection() {
                                                 <span className="text-white text-xs sm:text-sm font-bold">✓</span>
                                             </div>
                                         </span>
-                                        <span className="text-base md:text-lg font-medium">
+                                        <span className="text-base text-start md:text-lg font-medium">
                                             <strong>Turn Your Business Into an Autopilot Machine</strong><br />
                                             <span className="text-gray-600">Eliminate daily follow-ups & chaos with AI systems that run your business 24/7.</span>
                                         </span>
@@ -264,7 +272,7 @@ export default function HeroSection() {
                                                 <span className="text-white text-xs sm:text-sm font-bold">✓</span>
                                             </div>
                                         </span>
-                                        <span className="text-base md:text-lg font-medium">
+                                        <span className="text-base md:text-lg text-start font-medium">
                                             <strong>Save 3–5 Hours Every Day & Reinvest Into Growth</strong><br />
                                             <span className="text-gray-600">Free yourself from micro-management so you focus on scaling profits.</span>
                                         </span>
@@ -279,7 +287,7 @@ export default function HeroSection() {
                                                 <span className="text-white text-xs sm:text-sm font-bold">✓</span>
                                             </div>
                                         </span>
-                                        <span className="text-base md:text-lg font-medium">
+                                        <span className="text-base md:text-lg text-start font-medium">
                                             <strong>2X–5X Your Sales with WhatsApp AI & Automation</strong><br />
                                             <span className="text-gray-600">Close more deals without chasing leads or endless sales calls.</span>
                                         </span>
@@ -307,7 +315,7 @@ export default function HeroSection() {
                         </div>
 
                         {/* Pricing Glassmorphism Card */}
-                        <div className="flex justify-center mt-4 p-3">
+                        <div className="flex justify-center mt-8 md:mt-4 p-3">
 
                             <EnrollButton
                                 price="₹97"

@@ -33,13 +33,13 @@ export default function AITransformationSection() {
             <span className="text-red-600 font-bold text-sm md:text-base uppercase tracking-wide">Shocking Fact Every MSME Owner Must Know</span>
           </div>
 
-          <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
-            <span className="text-red-600">💡 90%</span> of MSMEs Are Still
-            <br />
+          <h1 className={`text-2xl mt-2 md:mt-0 md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
+            <span className="text-red-600">💡 90%</span> of MSMEs Are Still{' '}
+            <br className='md:block hidden' />
             <span className="bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Running Manually</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg mt-2 md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             And it's silently costing them <span className="text-red-600 font-bold">time, money & growth</span> every single day.
           </p>
 
@@ -105,16 +105,16 @@ export default function AITransformationSection() {
         </div>
 
         {/* Before vs After Comparison */}
-        <div className="mb-20">
+        <div className="md:mb-20">
           <div className="text-center ">
             <div className='flex justify-center items-center gap-2'>
               <h1 className={`text-4xl md:text-5xl hidden md:block lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
                 AI Business Launchpad
               </h1>
-              <img src='/rocket.png' className='h-20' />
+              <img src='/rocket.png' className='h-20 hidden md:block' />
             </div>
             <div className='flex justify-center '>
-              <div className="w-40  h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 rounded-full"></div>
+              <div className="w-40  h-1 bg-gradient-to-r from-blue-500 hidden md:block via-purple-500 to-orange-500 rounded-full"></div>
             </div>
           </div>
 

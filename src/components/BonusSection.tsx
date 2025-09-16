@@ -112,15 +112,15 @@ export default function BonusSection() {
                         <div className="inline-block backdrop-blur-md bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold mb-6">
                             🎁 EXCLUSIVE BONUSES
                         </div>
-                        <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
+                        <h1 className={`text-xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
                             Get <span className="">₹1,08,000 Worth</span> of
                             <br />Business Automation Tools
                         </h1>
-                        <p className="text-xl text-gray-600 font-medium mb-6">
+                        <p className="text-base mt-4 text-gray-600 font-medium mb-6">
                             Everything you need to build a completely automated, profitable business
                         </p>
                         <div className="backdrop-blur-md bg-green-50/80 border border-green-200/60 rounded-full px-8 py-3 inline-block">
-                            <span className="text-green-700 font-bold text-lg">
+                            <span className="text-green-700 font-bold text-sm md:text-lg">
                                 FREE when you join today (normally ₹1,08,000)
                             </span>
                         </div>

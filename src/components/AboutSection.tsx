@@ -45,18 +45,18 @@ export default function AboutSection() {
     }, [])
 
     const achievements = [
-        "Helped 12,000+ MSMEs automate operations",
-        "TEDx + Josh Talks Speaker",
-        "Founder of Zapllo",
-        "Shared stage with Sanjeev Bikhchandani (Naukri.com)",
-        "10+ years working closely with MSMEs like yours"
+        "Founder & Servant Leader @ Zapllo – India’s 1st AI Co-Manager for MSMEs",
+        "Featured in Startup India & leading MSME platforms",
+        "8+ Years of Corporate Excellence – Worked with Fortune 500 companies like Daimler, Capgemini, Mercedes AG, ex-Microsoft",
+        "Helped 20,000+ Businesses streamline & automate operations",
+        "5+ Years of Hands-on Experience with Indian MSMEs – solving daily operational challenges"
     ]
 
     const stats = [
-        { number: "12,000+", label: "MSMEs Helped" },
+        { number: "20,000+", label: "MSMEs Helped" },
         { number: "10+", label: "Years Experience" },
-        { number: "TEDx", label: "Speaker" },
-        { number: "#1", label: "Automation Expert" }
+        { number: "Featured", label: "Startup India" },
+        { number: "#1", label: "AI Expert" }
     ]
 
     return (
@@ -76,17 +76,17 @@ export default function AboutSection() {
                         <div className="inline-block backdrop-blur-md bg-blue-600/90 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6">
                             Know Your Coach
                         </div>
-                         <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
+                        <h1 className={`text-4xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
                             <span className="text-blue-600">Shubhodeep Banerjee</span>
                         </h1>
-                        <p className="text-xl md:text-2xl text-gray-600 font-medium mb-6">
-                            India's Leading Business Automation Coach
+                        <p className="text-xl md:text-2xl md:mt-0 mt-2 text-gray-600 font-medium mb-6">
+                            India&apos;s #1 AI Growth Coach for MSMEs
                         </p>
                         <div className="backdrop-blur-md bg-white/50 border border-white/60 rounded-2xl p-6 max-w-3xl mx-auto">
                             <p className="text-lg text-gray-700 italic font-medium">
                                 "I believe MSMEs deserve systems like big companies — without big company costs."
                             </p>
-                            <p className="text-gray-600 font-semibold mt-2">- Shubhodeep Banerjee</p>
+
                         </div>
                     </div>
                 </div>
@@ -144,43 +144,43 @@ export default function AboutSection() {
                     </div>
                 </div>
 
-               {/* Pricing Glassmorphism Card */}
-                        <div className="flex justify-center mt-4 p-3">
+                {/* Pricing Glassmorphism Card */}
+                <div className="flex justify-center mt-4 p-3">
 
-                            <EnrollButton
-                                price="₹97"
-                                originalPrice="₹999"
-                                buttonText="GET MY SPOT FOR ₹97"
-                                className=""
-                            />
-                        </div>
-                        {/* Progress bar */}
-                        <div className="">
-                            <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
-                                style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
-                                {Array.from({ length: 22 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className={
-                                            'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
-                                            (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
-                                        }
-                                    >
-                                        {i >= 20 && (
-                                            <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
-                                                ✔
-                                            </span>
-                                        )}
-                                    </div>
-                                ))}
+                    <EnrollButton
+                        price="₹97"
+                        originalPrice="₹999"
+                        buttonText="GET MY SPOT FOR ₹97"
+                        className=""
+                    />
+                </div>
+                {/* Progress bar */}
+                <div className="">
+                    <div className="mx-auto grid gap-[2px] sm:gap-[3px] max-w-[300px] sm:max-w-none"
+                        style={{ gridTemplateColumns: 'repeat(22,minmax(8px,18px))', width: 'fit-content' }}>
+                        {Array.from({ length: 22 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={
+                                    'h-[18px] sm:h-[24px] md:h-[28px] relative ' +
+                                    (i < 20 ? 'bg-[#A8A8A8]' : 'bg-[#9959FF] animate-pulse')
+                                }
+                            >
+                                {i >= 20 && (
+                                    <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] sm:text-[14px] font-bold">
+                                        ✔
+                                    </span>
+                                )}
                             </div>
+                        ))}
+                    </div>
 
-                            <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
-                                <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
-                                <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
-                            </div>
-                        </div>
-               
+                    <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-bold text-[#454545]">
+                        <CalendarX className="h-3 sm:h-4 w-3 sm:w-4" />
+                        <span>Seats Of This Event As Of {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).replace(/(\d+)/, '$1th')} Is Low</span>
+                    </div>
+                </div>
+
 
             </div>
 
