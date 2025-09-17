@@ -4,6 +4,8 @@ import { useEffect, useId, useMemo, useState } from 'react'
 import EnrollButton from './enroll'
 import { Calendar, CalendarOff, CalendarX, Clock, Globe, Languages, Phone } from 'lucide-react'
 import { Outfit, Unbounded } from 'next/font/google'
+import { useSearchParams } from 'next/navigation'
+import HeaderAlert from './HeaderAlert'
 
 interface ContentData {
     eventDate: string
@@ -12,6 +14,15 @@ interface ContentData {
     eventLanguage: string
     heroVideoUrl: string
     heroVideoPoster: string
+    dynamicHeadings: Array<{
+        id: string
+        key: string
+        mainHeading: string
+        subHeading: string
+        description: string
+        oldWay?: string
+        newWay?: string
+    }>
 }
 
 
@@ -27,15 +38,42 @@ const outfit = Outfit({
 
 
 export default function HeroSection() {
+    const searchParams = useSearchParams()
+    const headingParam = searchParams.get('heading') // This will get the heading parameter
+
     const [content, setContent] = useState<ContentData>({
         eventDate: '29th – 31st Aug',
         eventTime: '90 Minutes',
         eventLocation: 'Online',
         eventLanguage: 'English',
         heroVideoUrl: 'https://lp.launchatscale.com/wp-content/uploads/2025/06/C3926-YT.mp4',
-        heroVideoPoster: '/thumbnail.jpg'
+        heroVideoPoster: '/thumbnail.jpg',
+        dynamicHeadings: []
     })
     const [loading, setLoading] = useState(true)
+
+    // Find the appropriate heading based on URL parameter
+    const currentHeading = useMemo(() => {
+        if (!headingParam || !content.dynamicHeadings.length) {
+            return {
+                mainHeading: 'Cut 30% of Your Operational Costs',
+                subHeading: "with India's 1st AI Co-Manager for MSMEs",
+                description: "Turn chaos into systems & boost your productivity",
+                oldWay: "Hire more managers, chase your team, and drown in follow-ups.",
+                newWay: "Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly."
+            }
+        }
+
+        const foundHeading = content.dynamicHeadings.find(h => h.key === headingParam)
+        return foundHeading || {
+            mainHeading: 'Cut 30% of Your Operational Costs',
+            subHeading: "with India's 1st AI Co-Manager for MSMEs",
+            description: "Turn chaos into systems & boost your productivity",
+            oldWay: "Hire more managers, chase your team, and drown in follow-ups.",
+            newWay: "Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly."
+        }
+    }, [headingParam, content.dynamicHeadings])
+
 
     useEffect(() => {
         const fetchContent = async () => {
@@ -49,7 +87,8 @@ export default function HeroSection() {
                         eventLocation: data.eventLocation || 'Online',
                         eventLanguage: data.eventLanguage || 'English',
                         heroVideoUrl: data.heroVideoUrl || 'https://lp.launchatscale.com/wp-content/uploads/2025/06/C3926-YT.mp4',
-                        heroVideoPoster: data.heroVideoPoster || 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Shubh-Jain-thum1-1-1.avif'
+                        heroVideoPoster: data.heroVideoPoster || 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Shubh-Jain-thum1-1-1.avif',
+                        dynamicHeadings: data.dynamicHeadings || []
                     })
                 }
             } catch (error) {
@@ -62,6 +101,7 @@ export default function HeroSection() {
         fetchContent()
     }, [])
 
+
     const sessionDetails = [
         { label: 'DATE', value: content.eventDate, icon: Calendar },
         { label: 'DURATION', value: content.eventTime, icon: Clock },
@@ -71,7 +111,6 @@ export default function HeroSection() {
 
     return (
         <div className="min-h-screen relative md:mx-6 overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
-
 
             {/* Top ribbon */}
             <div className='w-full flex justify-center '>
@@ -83,8 +122,6 @@ export default function HeroSection() {
                 </div>
             </div>
 
-
-
             {/* Enhanced glassmorphism background pattern */}
             <div className="absolute inset-0 opacity-60">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/60 to-purple-500/60 rounded-full blur-2xl animate-pulse"></div>
@@ -92,6 +129,7 @@ export default function HeroSection() {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-cyan-500/50 to-blue-500/50 rounded-full blur-2xl animate-pulse delay-2000"></div>
                 <div className="absolute top-1/3 right-1/3 w-64 h-64 bg-gradient-to-r from-emerald-400/40 to-teal-500/40 rounded-full blur-2xl animate-pulse delay-3000"></div>
             </div>
+
             <div className="relative z-10 container mx-auto px-4 py-10 ">
                 {/* Main Title Section */}
                 {/* Main Title Section */}
@@ -100,13 +138,13 @@ export default function HeroSection() {
                         {/* <img src='https://www.zapllo.com/logo.png' className='h-16 mx-auto mb-4' /> */}
                         <div className='flex justify-center items-center gap-2'>
                             <h1 className={`text-3xl md:text-5xl lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
-                                Cut 30% of Your Operational Costs <span className='text-white md:hidden'>🚀</span>
+                                {currentHeading.mainHeading}<span className='text-white md:hidden'>🚀</span>
                             </h1>
                             <img src='/rocket.png' className='md:h-20 hidden md:block' />
                         </div>
 
                         <h2 className={`text-xl md:text-3xl lg:text-4xl font-bold text-gray-800 ${outfit.className} leading-tight`}>
-                            with India's 1st AI Co-Manager for MSMEs
+                            {currentHeading.subHeading}
                         </h2>
 
                         <div className="flex items-center justify-center gap-2 ">
@@ -119,13 +157,13 @@ export default function HeroSection() {
                         <div className="space-y-4 max-w- mb-4 mx-auto">
                             <div className="">
                                 <p className="text-base md:text-lg text-gray-700 font-medium">
-                                    <span className="font- text--600">❌ Old Way:</span> Hire more managers, chase your team, and drown in follow-ups.
+                                    <span className="font- text--600">❌ Old Way:</span> {currentHeading.oldWay || "Hire more managers, chase your team, and drown in follow-ups."}
                                 </p>
                             </div>
 
                             <div className="">
                                 <p className="text-base md:text-lg text-gray-700 font-medium">
-                                    <span className="font- text--600">✅ New Way:</span> Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly.
+                                    <span className="font- text--600">✅ New Way:</span> {currentHeading.newWay || "Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly."}
                                 </p>
                             </div>
                         </div>
@@ -133,7 +171,7 @@ export default function HeroSection() {
                 </div>
                 <div className='flex justify-center mt-4'>
                     <div className="grid grid-cols-2 md:grid-cols-3 mb-4 gap-4">
-                        <BenefitCard text="Stop Being the “Chief Follow-Up Officer”" />
+                        <BenefitCard text="Stop Being the Chief Follow-Up Officer" />
                         <BenefitCard text="Turn Chaos into Systems & Accountability" />
                         <div className='hidden md:block '>
                             <BenefitCard text="Save 3–5 Hours Every Single Day from Now" />
@@ -147,23 +185,7 @@ export default function HeroSection() {
                     <BenefitCard text="Save 3–5 Hours Every Single Day from Now" />
                 </div>
                 {/* Header Alert */}
-                <div className="text-center mb-4  mt-6">
-                    <div className="inline-flex items-center backdrop-blur-2xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border-2 border-orange-300/60 rounded-full px-6 py-3 shadow-2xl ring-1 ring-orange-200/30 hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
-                                <span className="text-lg animate-bounce">🔥</span>
-                                {/* <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div> */}
-                            </div>
-                            <span className="text-orange-700 font-bold text-sm md:text-base lg:text-sm tracking-wide uppercase">
-                                Limited Seats Available
-                            </span>
-                            <div className="hidden md:flex items-center gap-2 ml-2 px-3 py-1 bg-red-500/80 text-white text-xs font-bold rounded-full">
-                                <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                                ONLY 50 SPOTS
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <HeaderAlert />
 
                 <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 -mt-20 items-center">
                     {/* Right Content */}
@@ -409,4 +431,3 @@ function ImplementationPoint({ title, description }: { title: string; descriptio
         </div>
     )
 }
-

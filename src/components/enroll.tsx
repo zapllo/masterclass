@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import LeadDialog from './LeadDialog'
 
 interface EnrollButtonProps {
   className?: string
@@ -11,19 +13,73 @@ interface ContentData {
   price: string
   originalPrice: string
   enrollLink: string
+  dynamicHeadings: Array<{
+    id: string
+    key: string
+    mainHeading: string
+    subHeading: string
+    description: string
+    oldWay?: string
+    newWay?: string
+    price?: string
+    originalPrice?: string
+    enrollLink?: string
+  }>
 }
 
 export default function EnrollButton({
   className = "",
   showSeatsChip = true
 }: EnrollButtonProps) {
+  const searchParams = useSearchParams()
+  const headingParam = searchParams.get('heading') // Get the heading parameter
   const [isHovered, setIsHovered] = useState(false)
   const [seatsLeft, setSeatsLeft] = useState(30)
+  const [showDialog, setShowDialog] = useState(false)
   const [content, setContent] = useState<ContentData>({
     price: '₹99',
     originalPrice: '₹999',
-    enrollLink: 'https://pages.razorpay.com/hts-fbspecial'
+    enrollLink: '',
+    dynamicHeadings: []
   })
+
+  // Calculate current pricing based on URL parameter
+  const currentPricing = () => {
+    const defaultPricing = {
+      price: content.price || '₹99',
+      originalPrice: content.originalPrice || '₹999',
+      enrollLink: content.enrollLink || ''
+    }
+
+    if (!headingParam || !content.dynamicHeadings.length) {
+      return defaultPricing
+    }
+
+    const foundHeading = content.dynamicHeadings.find(h => h.key === headingParam)
+
+    if (!foundHeading) {
+      return defaultPricing
+    }
+
+    return {
+      price: foundHeading.price || defaultPricing.price,
+      originalPrice: foundHeading.originalPrice || defaultPricing.originalPrice,
+      enrollLink: foundHeading.enrollLink || defaultPricing.enrollLink
+    }
+  }
+
+  const handleEnrollClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+
+    // If no enrollment link, show dialog
+    if (!pricing.enrollLink) {
+      setShowDialog(true)
+    } else {
+      // Redirect to payment link
+      window.open(pricing.enrollLink, '_blank')
+    }
+  }
+
 
   useEffect(() => {
     // Fetch dynamic content
@@ -35,7 +91,8 @@ export default function EnrollButton({
           setContent({
             price: data.price || '₹99',
             originalPrice: data.originalPrice || '₹999',
-            enrollLink: data.enrollLink || 'https://pages.razorpay.com/hts-fbspecial'
+            enrollLink: data.enrollLink || '',
+            dynamicHeadings: data.dynamicHeadings || []
           })
         }
       } catch (error) {
@@ -84,7 +141,9 @@ export default function EnrollButton({
     return () => clearInterval(interval)
   }, [])
 
-   return (
+  const pricing = currentPricing()
+
+  return (
     <>
       <style jsx>{`
         @keyframes shimmer {
@@ -105,17 +164,17 @@ export default function EnrollButton({
           )}
 
           <b><b>
-            <a
-              className="relative inline-block bg-[#9959FF] text-white font-bold py-4 px-20 md:py-4 md:px-12 rounded-[20px] text-sm md:text-base transition-all duration-300 overflow-hidden group"
-              href={content.enrollLink}
+            <button
+              className="relative inline-block bg-[#9959FF] text-white font-bold py-4 px-20 md:py-4 md:px-12 rounded-[20px] text-sm md:text-base transition-all duration-300 overflow-hidden group w-full"
+              onClick={handleEnrollClick}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
               <span className="elementor-button-content-wrapper relative z-10">
                 <span className="elementor-button-text md:text-2xl text-[16px] text-nowrap items">
-                  ENROLL NOW @ {content.price}{' '}
+                  ENROLL NOW @ {pricing.price}{' '}
                   <strike className="text-red-200 opacity-80">
-                    {content.originalPrice}
+                    {pricing.originalPrice}
                   </strike>
                 </span>
               </span>
@@ -125,13 +184,12 @@ export default function EnrollButton({
                 className="shimmer-effect absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-40"
                 style={{ zIndex: 5 }}
               />
-
-              {/* Button glow effect */}
-              
-            </a>
+            </button>
           </b></b>
         </div>
       </div>
+      {/* Lead Dialog */}
+      <LeadDialog isOpen={showDialog} onClose={() => setShowDialog(false)} />
     </>
   )
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
-import Content, { IContent, ITestimonial, ITrackingScript } from '@/lib/models/Content'
+import Content, { IContent, ITestimonial, ITrackingScript, IBonus } from '@/lib/models/Content'
 import { verifyToken, getTokenFromHeaders } from '@/lib/auth'
 
 const defaultTestimonials: ITestimonial[] = [
@@ -27,6 +27,71 @@ const defaultTestimonials: ITestimonial[] = [
   }
 ]
 
+const defaultBonuses: IBonus[] = [
+  {
+    id: '1',
+    title: 'Team Performance Dashboard',
+    description: 'Real-time analytics to track productivity and identify bottlenecks',
+    value: '₹15,000',
+    image: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Frame-1519-8.png.webp',
+    icon: '📊'
+  },
+  {
+    id: '2',
+    title: 'Delegation Playbook Templates',
+    description: 'Ready-to-use SOPs and task delegation frameworks',
+    value: '₹12,000',
+    image: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Frame-1519-2.webp',
+    icon: '📋'
+  },
+  {
+    id: '3',
+    title: 'Accountability Systems Toolkit',
+    description: 'Automated tracking and reporting systems for team oversight',
+    value: '₹18,000',
+    image: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Frame-1519-3.webp',
+    icon: '🎯'
+  },
+  {
+    id: '4',
+    title: '1-Hour Private Consultation',
+    description: 'Personal session with Shubhodeep to customize your automation strategy',
+    value: '₹25,000',
+    image: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Frame-1519-4.webp',
+    icon: '💼'
+  },
+  {
+    id: '5',
+    title: 'Exclusive Leadership Community',
+    description: 'Lifetime access to network with 500+ successful business owners',
+    value: '₹8,000',
+    image: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Frame-1519-8.png.webp',
+    icon: '🤝'
+  },
+  {
+    id: '6',
+    title: 'Monthly Implementation Calls',
+    description: '6 months of group coaching calls for ongoing support',
+    value: '₹30,000',
+    image: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Frame-1519-2.webp',
+    icon: '📞'
+  }
+]
+
+const defaultDynamicHeadings = [
+  {
+    id: '1',
+    key: 'smb-owners',
+    mainHeading: 'Stop Being the "Chief Follow-Up Officer"',
+    subHeading: 'Turn Your Small Business Into an Autopilot Machine',
+    description: 'Let AI handle follow-ups while you focus on growth and scaling your business smartly.',
+    oldWay: 'Hire more managers, chase your team, and drown in follow-ups.',
+    newWay: 'Plug in Zapllo, Your AI Co-Manager that saves time, cuts costs, reduces errors & scales your business smartly.',
+    price: '₹197',
+    originalPrice: '₹1999',
+    enrollLink: 'https://pages.razorpay.com/smb-special'
+  }
+]
 
 const defaultTrackingScripts: ITrackingScript[] = [
   {
@@ -48,45 +113,63 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=1106571651572381&ev=PageView&noscript=1"
 /></noscript>`,
     enabled: true
-  },
-  {
-    id: '2',
-    name: 'Google Analytics',
-    script: `<script async src="https://www.googletagmanager.com/gtag/js?id=AW-670210434"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'AW-670210434');
-</script>`,
-    enabled: true
-  },
-  {
-    id: '3',
-    name: 'Microsoft Clarity',
-    script: `<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBorder(t,y);
-    })(window, document, "clarity", "script", "t2vg0a9heb");
-</script>`,
-    enabled: true
   }
 ]
 
 export async function GET() {
   try {
     await dbConnect()
-    let content = await Content.findOne()
+    let content = await Content.findOne();
 
     if (!content) {
-      // Create default content if none exists
       content = await Content.create({
         testimonials: defaultTestimonials,
+        bonuses: defaultBonuses,
         trackingScripts: defaultTrackingScripts,
-        eventDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+        dynamicHeadings: defaultDynamicHeadings,
+        eventDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        whatsappTemplate: {
+          templateName: 'masterclass_registration',
+          variable1: '{{SESSION_INFO}}',
+          variable2: 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t',
+          variable3: 'https://zapllo.com'
+        },
+        thankYouPage: {
+          videoUrl: 'https://lp.launchatscale.com/wp-content/uploads/2025/06/C3926-YT.mp4',
+          videoPoster: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Shubh-Jain-thum1-1-1.avif',
+          whatsappGroupLink: 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t'
+        }
       })
+    }
+
+    // Ensure all new fields exist with defaults
+    if (!content.dynamicHeadings || content.dynamicHeadings.length === 0) {
+      content.dynamicHeadings = defaultDynamicHeadings
+      await content.save()
+    }
+
+    if (!content.bonuses || content.bonuses.length === 0) {
+      content.bonuses = defaultBonuses
+      await content.save()
+    }
+
+    if (!content.whatsappTemplate) {
+      content.whatsappTemplate = {
+        templateName: 'masterclass_registration',
+        variable1: '{{SESSION_INFO}}',
+        variable2: 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t',
+        variable3: 'https://zapllo.com'
+      }
+      await content.save()
+    }
+
+    if (!content.thankYouPage) {
+      content.thankYouPage = {
+        videoUrl: 'https://lp.launchatscale.com/wp-content/uploads/2025/06/C3926-YT.mp4',
+        videoPoster: 'https://lp.launchatscale.com/wp-content/uploads/2024/05/Shubh-Jain-thum1-1-1.avif',
+        whatsappGroupLink: 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t'
+      }
+      await content.save()
     }
 
     return NextResponse.json(content)
@@ -95,7 +178,6 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
 
 export async function PUT(request: NextRequest) {
   try {

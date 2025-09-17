@@ -21,7 +21,7 @@ export default function Home({ }) {
           <div className='overflow-hidden md:mx-4 w-screen'>
             <HeroSection />
           </div>
-          <div className='bg-[#F5F6F8] w-screen '>
+          <div className='bg-[#F5F6F8] w-screen'>
             <ClientsSlider />
             <ReadyToBuySection />
             {/* <ReverseFunnelSection /> */}
@@ -37,16 +37,12 @@ export default function Home({ }) {
             </div>
             <FinalCTASection />
             <div className='bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100'>
-
               <AboutSection />
             </div>
-
             <FAQSection />
             <FooterSection />
             <StickyBottomCTA />
           </div>
-
-
         </div>
       </div>
     </div>

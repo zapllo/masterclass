@@ -5,10 +5,10 @@ import EnrollButton from './enroll'
 import { Clock, Zap } from 'lucide-react'
 
 interface ContentData {
-  price: string
-  originalPrice: string
-  enrollLink: string
-  eventDeadline: string
+    price: string
+    originalPrice: string
+    enrollLink: string
+    eventDeadline: string
 }
 
 export default function StickyBottomCTA() {
@@ -99,12 +99,16 @@ export default function StickyBottomCTA() {
                                     {content.originalPrice}
                                 </span>
                             </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                                <Clock className="h-4 w-4" />
+                                <span>Ends {currentDate}</span>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-1 bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-medium">
+                        {/* <div className="flex items-center gap-1 bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-medium">
                             <Zap className="h-3 w-3" />
                             <span>Limited Time</span>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Mobile CTA */}

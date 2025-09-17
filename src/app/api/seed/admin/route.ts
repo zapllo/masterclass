@@ -11,40 +11,40 @@ export async function POST() {
 
   try {
     await dbConnect()
-    
+
     // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ email: 'admin@example.com' })
+    const existingAdmin = await Admin.findOne({ email: 'admin@zapllo.com' })
     if (existingAdmin) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         message: 'Admin user already exists',
-        email: 'admin@launchatscale.com',
+        email: 'admin@zapllo.com',
         note: 'You can login with the existing credentials'
       })
     }
 
     // Create new admin
     const admin = new Admin({
-      email: 'admin@launchatscale.com',
-      password: 'shubh@launchAtScale',
+      email: 'admin@zapllo.com',
+      password: 'admin@Zapllo',
       name: 'Admin User'
     })
 
     await admin.save()
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       success: true,
       message: 'Admin user created successfully!',
       credentials: {
-        email: 'admin@example.com',
-        password: 'admin123'
+        email: 'admin@zapllo.com',
+        password: 'admin@Zapllo'
       },
       warning: 'Please change the password after first login',
       loginUrl: '/admin'
     })
-    
+
   } catch (error) {
     console.error('Error creating admin:', error)
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Failed to create admin user',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
@@ -60,29 +60,29 @@ export async function GET() {
 
   try {
     await dbConnect()
-    
+
     const adminCount = await Admin.countDocuments()
-    const adminExists = await Admin.findOne({ email: 'admin@example.com' })
-    
+    const adminExists = await Admin.findOne({ email: 'admin@zapllo.com' })
+
     return NextResponse.json({
       totalAdmins: adminCount,
       defaultAdminExists: !!adminExists,
-      message: adminExists 
-        ? 'Default admin already exists. Use POST to create if needed.' 
+      message: adminExists
+        ? 'Default admin already exists. Use POST to create if needed.'
         : 'No default admin found. Use POST to create one.',
       instructions: {
         createAdmin: 'Send POST request to this endpoint',
         loginUrl: '/admin',
         defaultCredentials: {
-          email: 'admin@example.com',
-          password: 'admin123'
+          email: 'admin@zapllo.com',
+          password: 'admin@Zapllo'
         }
       }
     })
-    
+
   } catch (error) {
     console.error('Error checking admin:', error)
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Failed to check admin status',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })

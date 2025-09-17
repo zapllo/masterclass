@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Clock, DollarSign, TrendingDown, TrendingUp, Zap, Users, Target, ArrowRight } from 'lucide-react'
+import { Clock, DollarSign, TrendingDown, TrendingUp, Zap, Users, Target, ArrowRight, IndianRupee } from 'lucide-react'
 import Image from 'next/image'
 import { Unbounded } from 'next/font/google'
 
@@ -85,7 +85,7 @@ export default function AITransformationSection() {
                   color="from-red-500 to-orange-500"
                 />
                 <GlassCostCard
-                  icon={<DollarSign className="h-8 w-8" />}
+                  icon={<IndianRupee className="h-8 w-8" />}
                   title="₹15,000–₹20,000 Lost Weekly"
                   description="At just ₹1,000/hour, manual operations are burning your profits"
                   color="from-orange-500 to-red-500"
