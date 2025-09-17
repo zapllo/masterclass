@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useMemo, useState } from 'react'
+import { Suspense, useEffect, useId, useMemo, useState } from 'react'
 import EnrollButton from './enroll'
 import { Calendar, CalendarOff, CalendarX, Clock, Globe, Languages, Phone } from 'lucide-react'
 import { Outfit, Unbounded } from 'next/font/google'
@@ -37,7 +37,7 @@ const outfit = Outfit({
 })
 
 
-export default function HeroSection() {
+function HeroSection() {
     const searchParams = useSearchParams()
     const headingParam = searchParams.get('heading') // This will get the heading parameter
 
@@ -430,4 +430,20 @@ function ImplementationPoint({ title, description }: { title: string; descriptio
             </div>
         </div>
     )
+}
+
+
+export default function HeroSectionPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    }>
+      <HeroSection />
+    </Suspense>
+  )
 }
