@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import LeadDialog from './LeadDialog'
 
@@ -27,7 +27,7 @@ interface ContentData {
   }>
 }
 
-export default function EnrollButton({
+function EnrollButtonContent({
   className = "",
   showSeatsChip = true
 }: EnrollButtonProps) {
@@ -191,5 +191,21 @@ export default function EnrollButton({
       {/* Lead Dialog */}
       <LeadDialog isOpen={showDialog} onClose={() => setShowDialog(false)} />
     </>
+  )
+}
+
+
+export default function EnrollButton() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    }>
+      <EnrollButtonContent />
+    </Suspense>
   )
 }
