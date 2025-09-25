@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useId, useMemo, useState } from 'react'
 import EnrollButton from './enroll'
-import { Calendar, CalendarOff, CalendarX, Clock, Globe, Languages, Phone } from 'lucide-react'
+import { Calendar, CalendarOff, CalendarX, Clock, Globe, Languages, Phone, Video } from 'lucide-react'
 import { Outfit, Unbounded } from 'next/font/google'
 import { useSearchParams } from 'next/navigation'
 import HeaderAlert from './HeaderAlert'
@@ -105,7 +105,7 @@ function HeroSection() {
     const sessionDetails = [
         { label: 'DATE', value: content.eventDate, icon: Calendar },
         { label: 'DURATION', value: content.eventTime, icon: Clock },
-        { label: 'DELIVERY', value: content.eventLocation, icon: Globe },
+        { label: 'DELIVERY', value: content.eventLocation, icon: Video },
         { label: 'LANGUAGE', value: content.eventLanguage, icon: Languages },
     ]
 
@@ -130,10 +130,16 @@ function HeroSection() {
                 <div className="absolute top-1/3 right-1/3 w-64 h-64 bg-gradient-to-r from-emerald-400/40 to-teal-500/40 rounded-full blur-2xl animate-pulse delay-3000"></div>
             </div>
 
-            <div className="relative z-10 container mx-auto px-4 py-10 ">
+            <div className="relative z-10 container mx-auto px-4 md:py-10 py-5  ">
                 {/* Main Title Section */}
                 {/* Main Title Section */}
+                <div>
+              <h2 className={`text-xl md:text-3xl mb-4 lg:text-4xl text-center font-black bg-gradient-to-r from-black -600 via-purple-700 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${outfit.className} drop-shadow-lg`}>
+                        India's 1st AI Co-Manager for MSMEs
+                    </h2>
+                </div>
                 <div className='flex justify-center mb-8'>
+
                     <div className="text-center space-y-6">
                         {/* <img src='https://www.zapllo.com/logo.png' className='h-16 mx-auto mb-4' /> */}
                         <div className='flex justify-center items-center gap-2'>
@@ -434,16 +440,16 @@ function ImplementationPoint({ title, description }: { title: string; descriptio
 
 
 export default function HeroSectionPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    }>
-      <HeroSection />
-    </Suspense>
-  )
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        }>
+            <HeroSection />
+        </Suspense>
+    )
 }

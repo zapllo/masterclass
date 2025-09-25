@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
-import Lead, { ILead } from '@/lib/models/Lead'
+import Lead from '@/lib/models/Lead'
 import Content from '@/lib/models/Content'
 import { verifyToken, getTokenFromHeaders } from '@/lib/auth'
 
-// Function to send WhatsApp message via Zapllo webhook
-const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string, eventTime: string, leadInfo: any, whatsappSettings: any) => {
+import {
+  ckUpsertSubscriber,
+  ckAddToForm,
+  ckAddToSequence,
+  ckTagSubscriber,
+} from '@/lib/convertkit'
+
+// ===== WhatsApp via Zapllo webhook (unchanged) =====
+const sendWhatsAppWelcomeMessage = async (
+  phoneNumber: string,
+  eventDate: string,
+  eventTime: string,
+  leadInfo: any,
+  whatsappSettings: any
+) => {
   const sessionInfo = `📅 ${eventDate} at ${eventTime}`
 
   const webhookPayload = {
@@ -14,10 +27,10 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
     templateName: whatsappSettings.templateName || 'masterclass_registration',
     mediaUrl: null,
     bodyVariables: [
-      sessionInfo, // Variable 1: Session info (replaces {{SESSION_INFO}})
-      whatsappSettings.variable2 || 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t', // Variable 2: WhatsApp Group Link
-      whatsappSettings.variable3 || 'https://zapllo.com' // Variable 3: Website Link
-    ]
+      sessionInfo,
+      whatsappSettings.variable2 || 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t',
+      whatsappSettings.variable3 || 'https://zapllo.com',
+    ],
   }
 
   console.log('🚀 Starting WhatsApp message send process...')
@@ -27,12 +40,12 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
     lastName: leadInfo.lastName,
     email: leadInfo.email,
     phone: phoneNumber,
-    teamSize: leadInfo.teamSize
+    teamSize: leadInfo.teamSize,
   })
   console.log('📋 Event Details:', {
     eventDate,
     eventTime,
-    formattedSessionInfo: sessionInfo
+    formattedSessionInfo: sessionInfo,
   })
   console.log('⚙️ WhatsApp Template Settings:', whatsappSettings)
   console.log('📦 Webhook Payload:', JSON.stringify(webhookPayload, null, 2))
@@ -45,10 +58,8 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
 
     const response = await fetch('https://zapllo.com/api/webhook', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(webhookPayload)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(webhookPayload),
     })
 
     const endTime = Date.now()
@@ -60,9 +71,8 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
     console.log('🔗 Response Headers:', Object.fromEntries(response.headers.entries()))
 
     if (!response.ok) {
-      let errorData
+      let errorData: any
       const contentType = response.headers.get('content-type')
-
       console.log('❌ WhatsApp webhook failed!')
       console.log('📋 Response Content-Type:', contentType)
 
@@ -79,7 +89,6 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
         errorData = 'Could not parse error response'
       }
 
-      // Log detailed error information
       console.log('🔍 Detailed Error Analysis:')
       console.log('  - HTTP Status:', response.status)
       console.log('  - Status Text:', response.statusText)
@@ -91,10 +100,8 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
       console.log('  - Response Time:', `${responseTime}ms`)
       console.log('  - Timestamp:', new Date().toISOString())
 
-      // Categorize error types
       if (response.status >= 400 && response.status < 500) {
         console.log('🚨 CLIENT ERROR (4xx): Issue with request data or authentication')
-
         if (response.status === 400) {
           console.log('💡 Bad Request - Possible issues:')
           console.log('  - Invalid phone number format')
@@ -129,8 +136,7 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
       throw new Error(`Webhook failed with status: ${response.status} - ${JSON.stringify(errorData)}`)
     }
 
-    // Success case
-    let result
+    let result: any
     const successContentType = response.headers.get('content-type')
 
     try {
@@ -156,7 +162,6 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
     console.log('  - Timestamp:', new Date().toISOString())
 
     return result
-
   } catch (error: any) {
     console.log('💥 CRITICAL ERROR in WhatsApp sending process!')
     console.log('🔍 Error Details:')
@@ -168,29 +173,28 @@ const sendWhatsAppWelcomeMessage = async (phoneNumber: string, eventDate: string
     console.log('  - Template Name:', webhookPayload.templateName)
     console.log('  - Timestamp:', new Date().toISOString())
 
-    // Check for common error types
-    if (error.message.includes('fetch')) {
+    if (error.message?.includes('fetch')) {
       console.log('🌐 Network Error - Possible issues:')
       console.log('  - No internet connection')
       console.log('  - DNS resolution failed')
       console.log('  - Zapllo webhook URL is unreachable')
       console.log('  - Firewall blocking outbound requests')
-    } else if (error.message.includes('timeout')) {
+    } else if (error.message?.includes('timeout')) {
       console.log('⏱️ Timeout Error - Possible issues:')
       console.log('  - Request took too long to complete')
       console.log('  - Server is overloaded')
       console.log('  - Need to increase timeout duration')
-    } else if (error.message.includes('JSON')) {
+    } else if (error.message?.includes('JSON')) {
       console.log('📄 JSON Error - Possible issues:')
       console.log('  - Invalid JSON in request payload')
       console.log('  - Special characters in variables need escaping')
     }
 
-    // Re-throw to be caught by calling function
     throw error
   }
 }
 
+// ====== ROUTES ======
 export async function POST(request: NextRequest) {
   try {
     await dbConnect()
@@ -198,102 +202,93 @@ export async function POST(request: NextRequest) {
     const leadData = await request.json()
     console.log('📥 Received lead registration request:', JSON.stringify(leadData, null, 2))
 
-    // Validate required fields
     const { firstName, lastName, email, phone, teamSize } = leadData
-
     if (!firstName || !lastName || !email || !phone || !teamSize) {
-      console.log('❌ Validation failed - missing required fields')
-      console.log('📋 Received fields:', { firstName: !!firstName, lastName: !!lastName, email: !!email, phone: !!phone, teamSize: !!teamSize })
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
     }
 
-    console.log('✅ Lead validation passed')
-
-    // Get event details and WhatsApp settings from Content model
-    console.log('📋 Fetching content settings from Content model...')
+    // Pull content config
     const content = await Content.findOne()
-
     if (!content) {
-      console.log('❌ No content found in database')
       return NextResponse.json({ error: 'Event details not found' }, { status: 500 })
     }
 
-    console.log('✅ Content model data retrieved:', {
-      eventDate: content.eventDate,
-      eventTime: content.eventTime,
-      eventLocation: content.eventLocation,
-      whatsappTemplate: content.whatsappTemplate
-    })
-
-    // Create the lead first
-    console.log('💾 Creating lead in database...')
+    // Create lead
     const lead = await Lead.create(leadData)
-    console.log('✅ Lead created successfully with ID:', lead._id)
+    console.log('✅ Lead created:', lead._id.toString())
 
-    // Send WhatsApp welcome message using settings from Content model
-    console.log('📱 Initiating WhatsApp message send...')
+    // === ConvertKit + WhatsApp in parallel (but independent) ===
+    await Promise.allSettled([
+      (async () => {
+        try {
+          // Upsert subscriber
+          const { id: subscriberId } = await ckUpsertSubscriber({
+            email,
+            firstName,
+            // Optional: send simple fields if you want
+            fields: {
+              'Source': 'Masterclass', // remove if you don't use this field in CK
+            },
+          })
+          console.log('✅ CK upsert ok. Subscriber ID:', subscriberId)
 
-    const leadInfo = {
-      id: lead._id.toString(),
-      firstName,
-      lastName,
-      email,
-      teamSize
-    }
+          // ---- SINGLE TAG ONLY ----
+          // Use env var (recommended): KIT_DEFAULT_TAG_ID=11061338
+          // Or hardcode below if you prefer.
+          const defaultTagId = process.env.KIT_DEFAULT_TAG_ID || '11061338'
+          if (subscriberId && defaultTagId) {
+            await ckTagSubscriber(defaultTagId, subscriberId)
+            console.log('🏷️ CK tag applied:', defaultTagId)
+          } else {
+            console.log('⚠️ Skipped tagging: missing subscriberId or KIT_DEFAULT_TAG_ID')
+          }
 
-    try {
-      await sendWhatsAppWelcomeMessage(
-        phone,
-        content.eventDate || '29th Sep',
-        content.eventTime || '7 PM – 9 PM',
-        leadInfo,
-        content.whatsappTemplate || {
-          templateName: 'masterclass_registration',
-          variable1: '{{SESSION_INFO}}',
-          variable2: 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t',
-          variable3: 'https://zapllo.com'
+          // (Optional) keep these if you still want form/sequence
+          const ckFormId = process.env.KIT_FORM_ID
+          const ckSequenceId = process.env.KIT_SEQUENCE_ID
+          if (ckFormId) await ckAddToForm(ckFormId, email, request.headers.get('referer') || undefined)
+          if (ckSequenceId) await ckAddToSequence(ckSequenceId, email)
+        } catch (e: any) {
+          console.log('🚨 ConvertKit flow failed:', e?.message)
         }
-      )
+      })(),
+      (async () => {
+        try {
+          await sendWhatsAppWelcomeMessage(
+            phone,
+            content.eventDate || '29th Sep',
+            content.eventTime || '7 PM – 9 PM',
+            { id: lead._id.toString(), firstName, lastName, email, teamSize },
+            content.whatsappTemplate || {
+              templateName: 'masterclass_registration',
+              variable1: '{{SESSION_INFO}}',
+              variable2: 'https://chat.whatsapp.com/BCgURzYeQZb1PB96uKvxjd?mode=ems_copy_t',
+              variable3: 'https://zapllo.com',
+            }
+          )
+        } catch (e: any) {
+          console.log('🚨 WhatsApp send failed (lead persisted):', e?.message)
+        }
+      })(),
+    ])
 
-      console.log('🎉 Complete success: Lead created and WhatsApp message sent!')
-
-    } catch (whatsappError: any) {
-      console.log('🚨 WhatsApp sending failed but lead was created successfully')
-      console.log('📋 WhatsApp Error Summary:')
-      console.log('  - Lead ID:', lead._id)
-      console.log('  - Phone:', phone)
-      console.log('  - Error:', whatsappError.message)
-      console.log('  - Time:', new Date().toISOString())
-
-      // Could implement retry logic here in the future
-      console.log('💡 Consider implementing retry logic for failed WhatsApp sends')
-    }
-
-    const responseData = {
+    return NextResponse.json({
       success: true,
       leadId: lead._id,
       message: 'Registration successful! Check your WhatsApp for event details.',
       eventDetails: {
         date: content.eventDate,
         time: content.eventTime,
-        location: content.eventLocation
-      }
-    }
-
-    console.log('📤 Sending response to client:', JSON.stringify(responseData, null, 2))
-    return NextResponse.json(responseData)
-
+        location: content.eventLocation,
+      },
+    })
   } catch (error: any) {
-    console.log('💥 CRITICAL ERROR in lead creation process!')
-    console.log('🔍 Error Details:')
-    console.log('  - Error Type:', error.constructor.name)
-    console.log('  - Error Message:', error.message)
-    console.log('  - Error Stack:', error.stack)
-    console.log('  - Timestamp:', new Date().toISOString())
-
+    console.log('💥 Lead creation error:', error?.message)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+
 export async function GET(request: NextRequest) {
   try {
     await dbConnect()

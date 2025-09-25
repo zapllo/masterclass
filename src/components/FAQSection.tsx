@@ -87,7 +87,7 @@ export default function FAQSection() {
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
 
-            <div className="relative z-10 max-w-4xl mx-auto">
+            <div className="relative z- max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-3 backdrop-blur-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-2 border-blue-200/50 rounded-full px-6 py-3 shadow-lg mb-6">

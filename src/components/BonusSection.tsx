@@ -171,7 +171,7 @@ export default function BonusSection() {
                 <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-gradient-to-r from-emerald-400/40 to-teal-500/40 rounded-full blur-2xl animate-pulse delay-3000"></div>
             </div>
 
-            <div className="relative z-10 container mx-auto px-4 max-w-7xl">
+            <div className="relative  container mx-auto px-4 max-w-7xl">
                 {/* Countdown Timer */}
                 <div className="text-center mb-8">
                     <div className="backdrop-blur-2xl bg-red-500/20 border-2 border-red-300/60 rounded-2xl p-6 max-w-2xl mx-auto">

@@ -168,7 +168,7 @@ export default function FinalCTASection() {
                 <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-gradient-to-r from-emerald-400/40 to-teal-500/40 rounded-full blur-2xl animate-pulse delay-3000"></div>
             </div>
 
-            <div className="relative z-10 container mx-auto px-4 max-w-6xl">
+            <div className="relative  container mx-auto px-4 max-w-6xl">
                 {/* Main Header */}
                 <div className="text-center mb-16">
                     <div className="backdrop-blur-2xl bg-white/35 border-2 border-white/60 rounded-3xl p-8 shadow-2xl ring-1 ring-black/5">

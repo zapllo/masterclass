@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Clock, DollarSign, TrendingDown, TrendingUp, Zap, Users, Target, ArrowRight, IndianRupee } from 'lucide-react'
 import Image from 'next/image'
 import { Unbounded } from 'next/font/google'
+import HeaderAlert from './HeaderAlert'
 
 const shadowsIntoLight = Unbounded({
   weight: '600',
@@ -108,7 +109,7 @@ export default function AITransformationSection() {
         <div className="md:mb-20">
           <div className="text-center ">
             <div className='flex justify-center items-center gap-2'>
-              <h1 className={`text-4xl md:text-5xl hidden md:block lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
+              <h1 className={`text-4xl md:text-5xl  md:block lg:text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 bg-clip-text text-transparent leading-tight tracking-tight ${shadowsIntoLight.className}`}>
                 AI Business Launchpad
               </h1>
               <img src='/rocket.png' className='h-20 hidden md:block' />
@@ -270,17 +271,25 @@ export default function AITransformationSection() {
               </svg>
             </div>
           </div>
-
+          <div className='flex justify-center md:hidden'>
+            <Image
+              src="/mascot.png"
+              alt="AI Army Capsule"
+              width={160}
+              height={160}
+              className="rounded-full mb-12 mt-20 bg-transparent scale-[150%]"
+            />
+          </div>
           {/* Mobile Layout - Keep existing mobile layout */}
           <div className="lg:hidden space-y-8">
             {/* Existing mobile layout code... */}
           </div>
         </div>
 
-
+        <HeaderAlert />
 
         {/* Final CTA */}
-        <div className="text-center">
+        <div className="text-center mt-12">
           <div className="backdrop-blur-2xl bg-gradient-to-r from-blue-50/60 to-purple-50/60 border-2 border-blue-200/50 rounded-3xl p-10 shadow-xl ring-1 ring-blue-100/30 max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-full text-sm font-bold mb-6">
               <span className="text-lg">👉</span>
@@ -365,7 +374,7 @@ function TransformationArrow() {
         <div className="w-24 h-24 md:w-32 md:h-32  bg-transparent rounded-full flex items-center justify-center animate-">
           {/* Replace this div with your actual capsule image */}
           <Image
-            src="/ai.png"
+            src="/mascot.png"
             alt="AI Army Capsule"
             width={200}
             height={200}
@@ -400,21 +409,16 @@ function CentralAICapsule() {
       {/* Main Capsule */}
       <div className="relative w-40 h-40 bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/50">
         <Image
-          src="/ai.png"
+          src="/mascot.png"
           alt="AI Army Capsule"
           width={160}
           height={160}
-          className="rounded-full bg-transparent scale-[280%]"
+          className="rounded-full bg-transparent scale-[180%]"
         />
       </div>
 
       {/* Transform Label */}
-      <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-        <div className="inline-flex items-center gap-2 backdrop-blur-xl bg-gradient-to-r from-blue-500/90 to-purple-600/90 text-white px-4 py-2 rounded-xl shadow-xl border border-white/30">
-          <Zap className="h-4 w-4" />
-          <span className="font-bold text-sm">AI TRANSFORMATION</span>
-        </div>
-      </div>
+
     </div>
   )
 }
@@ -537,32 +541,32 @@ function ConnectionLine({ start, end, color, delay, isVisible }: {
 
 // ... existing code ...
 
-        /* Enhanced Glassmorphic Cost Card */
-        function GlassCostCard({icon, title, description, color}: {
-          icon: React.ReactNode;
-        title: string;
-        description: string;
-        color: string;
+/* Enhanced Glassmorphic Cost Card */
+function GlassCostCard({ icon, title, description, color }: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  color: string;
 }) {
-    return (
-        <div className="group relative backdrop-blur-2xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 border border-white/30 rounded-2xl p-6 text-center hover:bg-white/25 transition-all duration-500 shadow-xl ring-1 ring-white/20 overflow-hidden">
-          {/* Glass overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-white/5 rounded-2xl group-hover:from-white/40 transition-all duration-500"></div>
+  return (
+    <div className="group relative backdrop-blur-2xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 border border-white/30 rounded-2xl p-6 text-center hover:bg-white/25 transition-all duration-500 shadow-xl ring-1 ring-white/20 overflow-hidden">
+      {/* Glass overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-white/5 rounded-2xl group-hover:from-white/40 transition-all duration-500"></div>
 
-          {/* Subtle light reflection */}
-          <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-gradient-to-br from-white/40 to-transparent rounded-tl-2xl"></div>
+      {/* Subtle light reflection */}
+      <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-gradient-to-br from-white/40 to-transparent rounded-tl-2xl"></div>
 
-          {/* Content */}
-          <div className="relative z-10">
-            <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${color} rounded-2xl text-white mb-4 shadow-2xl backdrop-blur-sm border border-white/20 group-hover:scale-110 transition-transform duration-300`}>
-              {icon}
-            </div>
-            <h3 className="font-bold text-gray-900 text-lg mb-3 drop-shadow-sm">{title}</h3>
-            <p className="text-gray-700 text-sm leading-relaxed">{description}</p>
-          </div>
-
-          {/* Animated glass shine effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+      {/* Content */}
+      <div className="relative z-10">
+        <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${color} rounded-2xl text-white mb-4 shadow-2xl backdrop-blur-sm border border-white/20 group-hover:scale-110 transition-transform duration-300`}>
+          {icon}
         </div>
-        )
+        <h3 className="font-bold text-gray-900 text-lg mb-3 drop-shadow-sm">{title}</h3>
+        <p className="text-gray-700 text-sm leading-relaxed">{description}</p>
+      </div>
+
+      {/* Animated glass shine effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+    </div>
+  )
 }
