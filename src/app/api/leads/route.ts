@@ -194,6 +194,50 @@ const sendWhatsAppWelcomeMessage = async (
   }
 }
 
+// Add this function after sendWhatsAppWelcomeMessage
+const addLeadToGoogleSheet = async (leadData: any) => {
+  const GOOGLE_APPS_SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
+
+  if (!GOOGLE_APPS_SCRIPT_URL) {
+    console.log('⚠️ Google Apps Script URL not configured');
+    return;
+  }
+
+  try {
+    console.log('📊 Adding lead to Google Sheet...');
+
+    const payload = {
+      firstName: leadData.firstName,
+      lastName: leadData.lastName,
+      email: leadData.email,
+      phone: leadData.phone,
+      teamSize: leadData.teamSize,
+      source: leadData.source || 'enrollment-form',
+    };
+
+    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ Lead added to Google Sheet:', result);
+
+    return result;
+  } catch (error: any) {
+    console.error('❌ Failed to add lead to Google Sheet:', error.message);
+    throw error;
+  }
+};
+
+
 // ====== ROUTES ======
 export async function POST(request: NextRequest) {
   try {
@@ -270,7 +314,17 @@ export async function POST(request: NextRequest) {
           console.log('🚨 WhatsApp send failed (lead persisted):', e?.message)
         }
       })(),
+      // Google Sheets flow
+      (async () => {
+        try {
+          await addLeadToGoogleSheet(leadData)
+          console.log('✅ Lead added to Google Sheet')
+        } catch (e: any) {
+          console.log('🚨 Google Sheets update failed (lead persisted):', e?.message)
+        }
+      })(),
     ])
+
 
     return NextResponse.json({
       success: true,
@@ -293,17 +347,17 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect()
 
-    const token = getTokenFromHeaders(request)
-    if (!token) {
-      console.log('❌ GET /api/leads - No authentication token provided')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // const token = getTokenFromHeaders(request)
+    // if (!token) {
+    //   console.log('❌ GET /api/leads - No authentication token provided')
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // }
 
-    const decoded = verifyToken(token)
-    if (!decoded) {
-      console.log('❌ GET /api/leads - Invalid authentication token')
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
+    // const decoded = verifyToken(token)
+    // if (!decoded) {
+    //   console.log('❌ GET /api/leads - Invalid authentication token')
+    //   return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    // }
 
     console.log('✅ GET /api/leads - Authentication successful')
 

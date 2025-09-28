@@ -29,7 +29,30 @@ import {
   Settings,
   BarChart3,
   Database,
-  Zap
+  Zap,
+  // New icons for lead management
+  Search,
+  Filter,
+  Download,
+  Edit3,
+  Phone,
+  Mail,
+  Tag,
+  Star,
+  MoreHorizontal,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  UserCheck,
+  UserX,
+  TrendingUp,
+  Copy,
+  ExternalLink,
+  SortAsc,
+  SortDesc,
+  FileText,
+  Activity
 } from 'lucide-react'
 import { ILead } from '@/lib/models/Lead'
 
@@ -42,6 +65,33 @@ interface AdminUser {
   id: string
   email: string
   name: string
+}
+
+// Lead management interfaces
+interface LeadFilters {
+  search: string
+  teamSize: string
+  source: string
+  startDate: string
+  endDate: string
+  dateRange: string
+}
+
+interface LeadPagination {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+interface LeadStats {
+  total: number
+  today: number
+  thisWeek: number
+  thisMonth: number
+  byTeamSize: Record<string, number>
+  bySource: Record<string, number>
+  recentGrowth: number
 }
 
 // Update the Google Analytics script in defaultTrackingScripts
@@ -102,9 +152,39 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'pricing' | 'event' | 'videos' | 'testimonials' | 'bonuses' | 'whatsapp' | 'thankyou' | 'leads' | 'tracking' | 'dynamic-headings'>('pricing')
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false)
 
-  // Add leads state
+  // Enhanced leads state
   const [leads, setLeads] = useState<ILead[]>([])
   const [loadingLeads, setLoadingLeads] = useState(false)
+  const [leadFilters, setLeadFilters] = useState<LeadFilters>({
+    search: '',
+    teamSize: '',
+    source: '',
+    startDate: '',
+    endDate: '',
+    dateRange: ''
+  })
+  const [leadPagination, setLeadPagination] = useState<LeadPagination>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0
+  })
+  const [leadStats, setLeadStats] = useState<LeadStats>({
+    total: 0,
+    today: 0,
+    thisWeek: 0,
+    thisMonth: 0,
+    byTeamSize: {},
+    bySource: {},
+    recentGrowth: 0
+  })
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([])
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+  const [sortField, setSortField] = useState<'createdAt' | 'firstName' | 'email'>('createdAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [showFilters, setShowFilters] = useState(false)
+  const [selectedLead, setSelectedLead] = useState<ILead | null>(null)
+  const [showLeadModal, setShowLeadModal] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -146,7 +226,7 @@ export default function AdminPage() {
     }
   }
 
-  // Add fetchLeads function
+  // Enhanced fetchLeads function
   const fetchLeads = async () => {
     setLoadingLeads(true)
     try {
@@ -158,14 +238,228 @@ export default function AdminPage() {
       })
       if (response.ok) {
         const data = await response.json()
-        setLeads(data)
+        let filteredLeads = [...data]
+
+        // Apply filters
+        if (leadFilters.search) {
+          const searchTerm = leadFilters.search.toLowerCase()
+          filteredLeads = filteredLeads.filter(lead =>
+            lead.firstName.toLowerCase().includes(searchTerm) ||
+            lead.lastName.toLowerCase().includes(searchTerm) ||
+            lead.email.toLowerCase().includes(searchTerm) ||
+            lead.phone.includes(searchTerm)
+          )
+        }
+
+        if (leadFilters.teamSize) {
+          filteredLeads = filteredLeads.filter(lead => lead.teamSize === leadFilters.teamSize)
+        }
+
+        if (leadFilters.source) {
+          filteredLeads = filteredLeads.filter(lead => lead.source === leadFilters.source)
+        }
+
+        if (leadFilters.startDate || leadFilters.endDate || leadFilters.dateRange) {
+          let startDate: Date | null = null
+          let endDate: Date | null = null
+
+          if (leadFilters.dateRange) {
+            const now = new Date()
+            switch (leadFilters.dateRange) {
+              case 'today':
+                startDate = new Date(now.setHours(0, 0, 0, 0))
+                endDate = new Date(now.setHours(23, 59, 59, 999))
+                break
+              case 'yesterday':
+                const yesterday = new Date(now)
+                yesterday.setDate(yesterday.getDate() - 1)
+                startDate = new Date(yesterday.setHours(0, 0, 0, 0))
+                endDate = new Date(yesterday.setHours(23, 59, 59, 999))
+                break
+              case 'thisWeek':
+                const weekStart = new Date(now)
+                weekStart.setDate(now.getDate() - now.getDay())
+                startDate = new Date(weekStart.setHours(0, 0, 0, 0))
+                endDate = new Date()
+                break
+              case 'lastWeek':
+                const lastWeekEnd = new Date(now)
+                lastWeekEnd.setDate(now.getDate() - now.getDay() - 1)
+                const lastWeekStart = new Date(lastWeekEnd)
+                lastWeekStart.setDate(lastWeekEnd.getDate() - 6)
+                startDate = new Date(lastWeekStart.setHours(0, 0, 0, 0))
+                endDate = new Date(lastWeekEnd.setHours(23, 59, 59, 999))
+                break
+              case 'thisMonth':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+                endDate = new Date()
+                break
+              case 'lastMonth':
+                const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+                const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+                startDate = lastMonth
+                endDate = lastMonthEnd
+                break
+            }
+          } else {
+            if (leadFilters.startDate) startDate = new Date(leadFilters.startDate)
+            if (leadFilters.endDate) endDate = new Date(leadFilters.endDate)
+          }
+
+          if (startDate || endDate) {
+            filteredLeads = filteredLeads.filter(lead => {
+              const leadDate = new Date(lead.createdAt)
+              if (startDate && leadDate < startDate) return false
+              if (endDate && leadDate > endDate) return false
+              return true
+            })
+          }
+        }
+
+        // Apply sorting
+        filteredLeads.sort((a, b) => {
+          let aValue: any, bValue: any
+
+          switch (sortField) {
+            case 'firstName':
+              aValue = a.firstName.toLowerCase()
+              bValue = b.firstName.toLowerCase()
+              break
+            case 'email':
+              aValue = a.email.toLowerCase()
+              bValue = b.email.toLowerCase()
+              break
+            case 'createdAt':
+            default:
+              aValue = new Date(a.createdAt)
+              bValue = new Date(b.createdAt)
+              break
+          }
+
+          if (sortOrder === 'desc') {
+            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
+          } else {
+            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+          }
+        })
+
+        // Calculate stats
+        const now = new Date()
+        const today = new Date(now.setHours(0, 0, 0, 0))
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1)
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+
+        const todayLeads = data.filter((lead: ILead) => new Date(lead.createdAt) >= today).length
+        const thisWeekLeads = data.filter((lead: ILead) => new Date(lead.createdAt) >= weekAgo).length
+        const thisMonthLeads = data.filter((lead: ILead) => new Date(lead.createdAt) >= monthAgo).length
+        const lastMonthLeads = data.filter((lead: ILead) => {
+          const leadDate = new Date(lead.createdAt)
+          return leadDate >= lastMonth && leadDate <= lastMonthEnd
+        }).length
+
+        const byTeamSize = data.reduce((acc: Record<string, number>, lead: ILead) => {
+          acc[lead.teamSize] = (acc[lead.teamSize] || 0) + 1
+          return acc
+        }, {})
+
+        const bySource = data.reduce((acc: Record<string, number>, lead: ILead) => {
+          const source = lead.source || 'Direct'
+          acc[source] = (acc[source] || 0) + 1
+          return acc
+        }, {})
+
+        const growth = lastMonthLeads > 0 ? ((thisMonthLeads - lastMonthLeads) / lastMonthLeads) * 100 : 0
+
+        setLeadStats({
+          total: data.length,
+          today: todayLeads,
+          thisWeek: thisWeekLeads,
+          thisMonth: thisMonthLeads,
+          byTeamSize,
+          bySource,
+          recentGrowth: Math.round(growth)
+        })
+
+        // Apply pagination
+        const total = filteredLeads.length
+        const totalPages = Math.ceil(total / leadPagination.limit)
+        const startIndex = (leadPagination.page - 1) * leadPagination.limit
+        const endIndex = startIndex + leadPagination.limit
+        const paginatedLeads = filteredLeads.slice(startIndex, endIndex)
+
+        setLeads(paginatedLeads)
+        setLeadPagination(prev => ({ ...prev, total, totalPages }))
       }
     } catch (error) {
       console.error('Error fetching leads:', error)
+      showNotification('error', 'Failed to fetch leads')
     } finally {
       setLoadingLeads(false)
     }
   }
+
+  // Export leads function
+  const exportLeads = () => {
+    const csvData = leads.map(lead => ({
+      'First Name': lead.firstName,
+      'Last Name': lead.lastName,
+      'Email': lead.email,
+      'Phone': lead.phone,
+      'Team Size': lead.teamSize,
+      'Source': lead.source || 'Direct',
+      'Session': lead.session || '',
+      'Registration Date': new Date(lead.createdAt).toLocaleDateString(),
+      'Registration Time': new Date(lead.createdAt).toLocaleTimeString()
+    }))
+
+    const csvString = [
+      Object.keys(csvData[0]).join(','),
+      ...csvData.map(row => Object.values(row).map(val => `"${val}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvString], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `leads-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  // Reset filters
+  const resetFilters = () => {
+    setLeadFilters({
+      search: '',
+      teamSize: '',
+      source: '',
+      startDate: '',
+      endDate: '',
+      dateRange: ''
+    })
+    setLeadPagination(prev => ({ ...prev, page: 1 }))
+  }
+
+  // Filter change handler
+  const handleFilterChange = (key: keyof LeadFilters, value: string) => {
+    setLeadFilters(prev => ({ ...prev, [key]: value }))
+    setLeadPagination(prev => ({ ...prev, page: 1 }))
+  }
+
+  // Copy to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    showNotification('success', 'Copied to clipboard!')
+  }
+
+  // Debounced search effect
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      fetchLeads()
+    }, 300)
+    return () => clearTimeout(debounce)
+  }, [leadFilters, sortField, sortOrder, leadPagination.page, leadPagination.limit])
 
   // Fetch leads when leads tab is active
   useEffect(() => {
@@ -173,6 +467,10 @@ export default function AdminPage() {
       fetchLeads()
     }
   }, [activeTab])
+
+  // Get unique team sizes and sources for filter options
+  const uniqueTeamSizes = [...new Set(leads.map(lead => lead.teamSize))].sort()
+  const uniqueSources = [...new Set(leads.map(lead => lead.source || 'Direct'))].sort()
 
   const updateBonus = <K extends keyof IBonus>(index: number, field: K, value: IBonus[K]) => {
     if (!content) return
@@ -532,6 +830,136 @@ export default function AdminPage() {
         />
       )}
 
+      {/* Lead Detail Modal */}
+      {showLeadModal && selectedLead && (
+        <div className="fixed inset-0 bg-black/60 bg-opacity-50 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Lead Details</h2>
+                <button
+                  onClick={() => setShowLeadModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Basic Info */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">Name</label>
+                      <p className="text-gray-900 font-medium">{selectedLead.firstName} {selectedLead.lastName}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">Team Size</label>
+                      <p className="text-gray-900">{selectedLead.teamSize}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Info */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Mail className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-900">{selectedLead.email}</span>
+                      </div>
+                      <button
+                        onClick={() => copyToClipboard(selectedLead.email)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Phone className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-900">+91 {selectedLead.phone}</span>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => copyToClipboard(selectedLead.phone)}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <a
+                          href={`tel:+91${selectedLead.phone}`}
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          <Phone className="w-4 h-4" />
+                        </a>
+                        <a
+                          href={`https://wa.me/91${selectedLead.phone}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Registration Details */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Registration Details</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">Source</label>
+                      <p className="text-gray-900">{selectedLead.source || 'Direct'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">Session</label>
+                      <p className="text-gray-900">{selectedLead.session || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">Registration Date</label>
+                      <p className="text-gray-900">{new Date(selectedLead.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">Registration Time</label>
+                      <p className="text-gray-900">{new Date(selectedLead.createdAt).toLocaleTimeString()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex space-x-3">
+                  <a
+                    href={`mailto:${selectedLead.email}?subject=Welcome to the Masterclass`}
+                    className="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Send Email
+                  </a>
+                  <a
+                    href={`https://wa.me/91${selectedLead.phone}?text=Hi ${selectedLead.firstName}, thank you for registering for our masterclass!`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-green-600 text-white text-center py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    WhatsApp
+                  </a>
+                  <a
+                    href={`tel:+91${selectedLead.phone}`}
+                    className="flex-1 bg-orange-600 text-white text-center py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors"
+                  >
+                    Call
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
@@ -544,7 +972,6 @@ export default function AdminPage() {
                   {/* <img src='https://zapllo.com/logo.png' className="h-8" /> */}
                 </div>
                 <h1 className="text-lg font-bold text-gray-900">
-
                   Admin Dashboard</h1>
                 <p className="text-sm text-gray-500">Content Management</p>
               </div>
@@ -1010,7 +1437,7 @@ export default function AdminPage() {
                       <input
                         type="text"
                         value={content?.bonusTotalValue || ''}
-                        onChange={(e) => updateContent('bonusTotalValue', e.target.value)}
+                     onChange={(e) => updateContent('bonusTotalValue', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="₹1,08,000 (leave empty for auto-calculation)"
                       />
@@ -1298,19 +1725,6 @@ export default function AdminPage() {
                           />
                         </div>
 
-                        {/* <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Description/Benefits Text
-                          </label>
-                          <textarea
-                            value={heading.description || ''}
-                            onChange={(e) => updateDynamicHeading(index, 'description', e.target.value)}
-                            rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g., Turn chaos into systems & boost your productivity"
-                          />
-                        </div> */}
-
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Old Way Text (❌ Old Way:)
@@ -1337,53 +1751,6 @@ export default function AdminPage() {
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Current Price (Optional)
-                            </label>
-                            <input
-                              type="text"
-                              value={heading.price || ''}
-                              onChange={(e) => updateDynamicHeading(index, 'price', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="e.g., ₹197 (leave empty for default)"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Original Price (Optional)
-                            </label>
-                            <input
-                              type="text"
-                              value={heading.originalPrice || ''}
-                              onChange={(e) => updateDynamicHeading(index, 'originalPrice', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="e.g., ₹1999 (leave empty for default)"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Enrollment Link (Optional)
-                            </label>
-                            <input
-                              type="url"
-                              value={heading.enrollLink || ''}
-                              onChange={(e) => updateDynamicHeading(index, 'enrollLink', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="https://... (leave empty for default)"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <p className="text-sm text-yellow-800">
-                            <strong>💡 Pricing Override:</strong> If you set custom pricing here, it will override the default pricing when users visit this specific URL variant. Leave empty to use default pricing.
-                          </p>
-                        </div>
-
                         {/* Preview */}
                         {heading.mainHeading && (
                           <div className="mt-4 p-3 bg-white rounded-lg border">
@@ -1391,7 +1758,6 @@ export default function AdminPage() {
                             <div className="space-y-2">
                               <h4 className="text-lg font-semibold text-gray-900">{heading.mainHeading}</h4>
                               <h5 className="text-base font-medium text-gray-700">{heading.subHeading}</h5>
-                              {heading.description && <p className="text-sm text-gray-600">{heading.description}</p>}
                               {heading.oldWay && <p className="text-sm text-gray-600">❌ Old Way: {heading.oldWay}</p>}
                               {heading.newWay && <p className="text-sm text-gray-600">✅ New Way: {heading.newWay}</p>}
                             </div>
@@ -1638,7 +2004,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Sync Options */}
-                <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+               <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <h3 className="text-lg font-medium text-yellow-900 mb-4">🔄 Sync with Other Settings</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
@@ -1779,148 +2145,705 @@ export default function AdminPage() {
 
             {activeTab === 'leads' && (
               <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-lg font-medium text-gray-900">Lead Management</h2>
-                    <p className="text-sm text-gray-500 mt-1">View and manage registration leads</p>
+                {/* Enhanced Stats Dashboard */}
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium opacity-90">Total Leads</p>
+                        <p className="text-2xl font-bold">{leadStats.total}</p>
+                      </div>
+                      <Users className="w-8 h-8 opacity-80" />
+                    </div>
                   </div>
-                  <button
-                    onClick={fetchLeads}
-                    disabled={loadingLeads}
-                    className="inline-flex items-center space-x-2 bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-                  >
-                    {loadingLeads ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <span>Refresh</span>
+
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium opacity-90">Today</p>
+                        <p className="text-2xl font-bold">{leadStats.today}</p>
+                      </div>
+                      <Activity className="w-8 h-8 opacity-80" />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-4 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium opacity-90">This Week</p>
+                        <p className="text-2xl font-bold">{leadStats.thisWeek}</p>
+                      </div>
+                      <Calendar className="w-8 h-8 opacity-80" />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-4 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium opacity-90">This Month</p>
+                        <p className="text-2xl font-bold">{leadStats.thisMonth}</p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 opacity-80" />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg p-4 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium opacity-90">Growth Rate</p>
+                        <p className="text-2xl font-bold">{leadStats.recentGrowth > 0 ? '+' : ''}{leadStats.recentGrowth}%</p>
+                      </div>
+                      <BarChart3 className="w-8 h-8 opacity-80" />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg p-4 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium opacity-90">Avg/Day</p>
+                        <p className="text-2xl font-bold">{Math.round(leadStats.total / Math.max(1, Math.ceil((new Date().getTime() - new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()) / (1000 * 60 * 60 * 24))))}</p>
+                      </div>
+                      <Clock className="w-8 h-8 opacity-80" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Team Size & Source Breakdown */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Leads by Team Size</h3>
+                    <div className="space-y-2">
+                      {Object.entries(leadStats.byTeamSize).map(([teamSize, count]) => (
+                        <div key={teamSize} className="flex items-center justify-between">
+                          <span className="text-gray-700">{teamSize}</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-20 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{ width: `${(count / leadStats.total) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-gray-900 w-8">{count}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Leads by Source</h3>
+                    <div className="space-y-2">
+                      {Object.entries(leadStats.bySource).map(([source, count]) => (
+                        <div key={source} className="flex items-center justify-between">
+                          <span className="text-gray-700">{source}</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-20 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-green-600 h-2 rounded-full"
+                                style={{ width: `${(count / leadStats.total) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-gray-900 w-8">{count}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Search and Filters */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <div className="flex flex-col lg:flex-row gap-4">
+                    {/* Search */}
+                    <div className="flex-1">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                          type="text"
+                          placeholder="Search by name, email, or phone..."
+                          value={leadFilters.search}
+                          onChange={(e) => handleFilterChange('search', e.target.value)}
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                          showFilters ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Filter className="w-4 h-4" />
+                        <span>Filters</span>
+                      </button>
+
+                      <button
+                        onClick={() => setViewMode(viewMode === 'table' ? 'cards' : 'table')}
+                        className="inline-flex items-center space-x-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50"
+                      >
+                        {viewMode === 'table' ? <BarChart3 className="w-4 h-4" /> : <Database className="w-4 h-4" />}
+                        <span>{viewMode === 'table' ? 'Cards' : 'Table'}</span>
+                      </button>
+
+                      <button
+                        onClick={fetchLeads}
+                        disabled={loadingLeads}
+                        className="inline-flex items-center space-x-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${loadingLeads ? 'animate-spin' : ''}`} />
+                        <span>Refresh</span>
+                      </button>
+
+                      <button
+                        onClick={exportLeads}
+                        className="inline-flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Export</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Advanced Filters */}
+                  {showFilters && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Team Size</label>
+                          <select
+                            value={leadFilters.teamSize}
+                            onChange={(e) => handleFilterChange('teamSize', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">All Team Sizes</option>
+                            {uniqueTeamSizes.map(size => (
+                              <option key={size} value={size}>{size}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Source</label>
+                          <select
+                            value={leadFilters.source}
+                            onChange={(e) => handleFilterChange('source', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">All Sources</option>
+                            {uniqueSources.map(source => (
+                              <option key={source} value={source}>{source}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                          <select
+                            value={leadFilters.dateRange}
+                            onChange={(e) => handleFilterChange('dateRange', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="thisWeek">This Week</option>
+                            <option value="lastWeek">Last Week</option>
+                            <option value="thisMonth">This Month</option>
+                            <option value="lastMonth">Last Month</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                          <input
+                            type="date"
+                            value={leadFilters.startDate}
+                            onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            disabled={!!leadFilters.dateRange}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                          <input
+                            type="date"
+                            value={leadFilters.endDate}
+                            onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            disabled={!!leadFilters.dateRange}
+                          />
+                        </div>
+
+                        <div className="flex items-end">
+                          <button
+                            onClick={resetFilters}
+                            className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                          >
+                            Reset Filters
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sorting and Pagination Controls */}
+                <div className="flex flex-col lg:flex-row justify-between items-center mb-4 gap-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                      <select
+                        value={sortField}
+                        onChange={(e) => setSortField(e.target.value as typeof sortField)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="createdAt">Registration Date</option>
+                        <option value="firstName">First Name</option>
+                        <option value="email">Email</option>
+                      </select>
+                    </div>
+
+                    <button
+                      onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+                      className="flex items-center space-x-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      {sortOrder === 'desc' ? <SortDesc className="w-4 h-4" /> : <SortAsc className="w-4 h-4" />}
+                      <span className="text-sm">{sortOrder === 'desc' ? 'Desc' : 'Asc'}</span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium text-gray-700">Show:</label>
+                      <select
+                        value={leadPagination.limit}
+                        onChange={(e) => setLeadPagination(prev => ({ ...prev, limit: parseInt(e.target.value), page: 1 }))}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                      </select>
+                      <span className="text-sm text-gray-700">per page</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Results Summary */}
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600">
+                    Showing {((leadPagination.page - 1) * leadPagination.limit) + 1} to {Math.min(leadPagination.page * leadPagination.limit, leadPagination.total)} of {leadPagination.total} leads
+                    {Object.values(leadFilters).some(filter => filter) && (
+                      <span className="ml-2 text-blue-600">(filtered)</span>
                     )}
-                  </button>
+                  </p>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-white rounded-lg p-4 shadow border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Total Leads</p>
-                        <p className="text-2xl font-semibold text-gray-900">{leads.length}</p>
-                      </div>
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Users className="w-5 h-5 text-blue-600" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Today</p>
-                        <p className="text-2xl font-semibold text-gray-900">
-                          {leads.filter(lead => new Date(lead.createdAt).toDateString() === new Date().toDateString()).length}
-                        </p>
-                      </div>
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-green-600" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">This Week</p>
-                        <p className="text-2xl font-semibold text-gray-900">
-                          {leads.filter(lead => {
-                            const leadDate = new Date(lead.createdAt)
-                            const weekAgo = new Date()
-                            weekAgo.setDate(weekAgo.getDate() - 7)
-                            return leadDate >= weekAgo
-                          }).length}
-                        </p>
-                      </div>
-                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <Clock className="w-5 h-5 text-yellow-600" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
-                        <p className="text-2xl font-semibold text-gray-900">
-                          {leads.length > 0 ? '100%' : '0%'}
-                        </p>
-                      </div>
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-purple-600" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Leads Table */}
+                {/* Leads Content */}
                 {loadingLeads ? (
                   <div className="text-center py-12">
                     <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
                     <p className="text-gray-600">Loading leads...</p>
                   </div>
                 ) : leads.length > 0 ? (
-                  <div className="bg-white rounded-lg shadow border overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Contact
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Team Size
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Registered
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {leads.map((lead) => (
-                            <tr key={lead._id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">
-                                  {lead.firstName} {lead.lastName}
+                  <>
+                    {viewMode === 'table' ? (
+                      /* Table View */
+                      <div className="bg-white rounded-lg shadow border overflow-hidden">
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLeads.length === leads.length}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedLeads(leads.map(lead => lead._id))
+                                      } else {
+                                        setSelectedLeads([])
+                                      }
+                                    }}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                  />
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Lead Details
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Contact Info
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Team Size
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Source
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Registered
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Actions
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {leads.map((lead) => (
+                                <tr key={lead._id} className="hover:bg-gray-50 transition-colors">
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedLeads.includes(lead._id)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setSelectedLeads([...selectedLeads, lead._id])
+                                        } else {
+                                          setSelectedLeads(selectedLeads.filter(id => id !== lead._id))
+                                        }
+                                      }}
+                                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                      <div className="flex-shrink-0 h-10 w-10">
+                                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                          <span className="text-sm font-medium text-blue-800">
+                                            {lead.firstName.charAt(0)}{lead.lastName.charAt(0)}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div className="ml-4">
+                                        <div className="text-sm font-medium text-gray-900">
+                                          {lead.firstName} {lead.lastName}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                          Lead ID: {lead._id.slice(-6)}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="space-y-1">
+                                      <div className="flex items-center space-x-2">
+                                        <Mail className="w-4 h-4 text-gray-400" />
+                                        <span className="text-sm text-gray-900">{lead.email}</span>
+                                        <button
+                                          onClick={() => copyToClipboard(lead.email)}
+                                          className="text-blue-600 hover:text-blue-700"
+                                        >
+                                          <Copy className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Phone className="w-4 h-4 text-gray-400" />
+                                        <span className="text-sm text-gray-900">+91 {lead.phone}</span>
+                                        <button
+                                          onClick={() => copyToClipboard(lead.phone)}
+                                          className="text-blue-600 hover:text-blue-700"
+                                        >
+                                          <Copy className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                                      {lead.teamSize}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                      {lead.source || 'Direct'}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div>
+                                      {new Date(lead.createdAt).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                      })}
+                                    </div>
+                                    <div className="text-xs text-gray-400">
+                                      {new Date(lead.createdAt).toLocaleTimeString('en-US', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })}
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div className="flex items-center space-x-2">
+                                   <button
+                                        onClick={() => {
+                                          setSelectedLead(lead)
+                                          setShowLeadModal(true)
+                                        }}
+                                        className="text-blue-600 hover:text-blue-700"
+                                        title="View Details"
+                                      >
+                                        <Eye className="w-4 h-4" />
+                                      </button>
+                                      <a
+                                        href={`mailto:${lead.email}?subject=Welcome to the Masterclass`}
+                                        className="text-gray-600 hover:text-gray-700"
+                                        title="Send Email"
+                                      >
+                                        <Mail className="w-4 h-4" />
+                                      </a>
+                                      <a
+                                        href={`https://wa.me/91${lead.phone}?text=Hi ${lead.firstName}, thank you for registering!`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-green-600 hover:text-green-700"
+                                        title="WhatsApp"
+                                      >
+                                        <MessageCircle className="w-4 h-4" />
+                                      </a>
+                                      <a
+                                        href={`tel:+91${lead.phone}`}
+                                        className="text-orange-600 hover:text-orange-700"
+                                        title="Call"
+                                      >
+                                        <Phone className="w-4 h-4" />
+                                      </a>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Cards View */
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {leads.map((lead) => (
+                          <div key={lead._id} className="bg-white rounded-lg shadow border p-6 hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                  <span className="text-lg font-medium text-blue-800">
+                                    {lead.firstName.charAt(0)}{lead.lastName.charAt(0)}
+                                  </span>
                                 </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{lead.email}</div>
-                                <div className="text-sm text-gray-500">+91 {lead.phone}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                                  {lead.teamSize}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {new Date(lead.createdAt).toLocaleDateString('en-US', {
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                                <div>
+                                  <h3 className="text-lg font-semibold text-gray-900">
+                                    {lead.firstName} {lead.lastName}
+                                  </h3>
+                                  <p className="text-sm text-gray-500">
+                                    {lead.teamSize}
+                                  </p>
+                                </div>
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={selectedLeads.includes(lead._id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedLeads([...selectedLeads, lead._id])
+                                  } else {
+                                    setSelectedLeads(selectedLeads.filter(id => id !== lead._id))
+                                  }
+                                }}
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                            </div>
+
+                            <div className="space-y-3 mb-4">
+                              <div className="flex items-center space-x-2">
+                                <Mail className="w-4 h-4 text-gray-400" />
+                                <span className="text-sm text-gray-700 flex-1 truncate">{lead.email}</span>
+                                <button
+                                  onClick={() => copyToClipboard(lead.email)}
+                                  className="text-blue-600 hover:text-blue-700"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                </button>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Phone className="w-4 h-4 text-gray-400" />
+                                <span className="text-sm text-gray-700">+91 {lead.phone}</span>
+                                <button
+                                  onClick={() => copyToClipboard(lead.phone)}
+                                  className="text-blue-600 hover:text-blue-700"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between mb-4">
+                              <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                {lead.source || 'Direct'}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(lead.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedLead(lead)
+                                  setShowLeadModal(true)
+                                }}
+                                className="flex-1 bg-blue-600 text-white text-center py-2 px-3 rounded text-sm hover:bg-blue-700 transition-colors"
+                              >
+                                View Details
+                              </button>
+                              <a
+                                href={`https://wa.me/91${lead.phone}?text=Hi ${lead.firstName}, thank you for registering!`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 bg-green-600 text-white text-center py-2 px-3 rounded text-sm hover:bg-green-700 transition-colors"
+                              >
+                                WhatsApp
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Pagination */}
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="text-sm text-gray-700">
+                        Showing {((leadPagination.page - 1) * leadPagination.limit) + 1} to{' '}
+                        {Math.min(leadPagination.page * leadPagination.limit, leadPagination.total)} of{' '}
+                        {leadPagination.total} results
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setLeadPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                          disabled={leadPagination.page === 1}
+                          className="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                          <span className="ml-1">Previous</span>
+                        </button>
+
+                        <div className="flex space-x-1">
+                          {Array.from({ length: Math.min(5, leadPagination.totalPages) }, (_, i) => {
+                            const pageNum = i + 1
+                            return (
+                              <button
+                                key={pageNum}
+                                onClick={() => setLeadPagination(prev => ({ ...prev, page: pageNum }))}
+                                className={`px-3 py-2 border rounded-lg ${
+                                  leadPagination.page === pageNum
+                                    ? 'bg-blue-600 text-white border-blue-600'
+                                    : 'border-gray-300 hover:bg-gray-50'
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            )
+                          })}
+                        </div>
+
+                        <button
+                          onClick={() => setLeadPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                          disabled={leadPagination.page === leadPagination.totalPages}
+                          className="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <span className="mr-1">Next</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+
+                    {/* Bulk Actions */}
+                    {selectedLeads.length > 0 && (
+                      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg border px-6 py-4 z-50">
+                        <div className="flex items-center space-x-4">
+                          <span className="text-sm font-medium text-gray-700">
+                            {selectedLeads.length} lead{selectedLeads.length > 1 ? 's' : ''} selected
+                          </span>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => {
+                                const emails = leads
+                                  .filter(lead => selectedLeads.includes(lead._id))
+                                  .map(lead => lead.email)
+                                  .join(',')
+                                window.open(`mailto:${emails}?subject=Welcome to the Masterclass`)
+                              }}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                              Email All
+                            </button>
+                            <button
+                              onClick={() => {
+                                const csvData = leads
+                                  .filter(lead => selectedLeads.includes(lead._id))
+                                  .map(lead => ({
+                                    'First Name': lead.firstName,
+                                    'Last Name': lead.lastName,
+                                    'Email': lead.email,
+                                    'Phone': lead.phone,
+                                    'Team Size': lead.teamSize,
+                                    'Source': lead.source || 'Direct'
+                                  }))
+
+                                const csvString = [
+                                  Object.keys(csvData[0]).join(','),
+                                  ...csvData.map(row => Object.values(row).map(val => `"${val}"`).join(','))
+                                ].join('\n')
+
+                                const blob = new Blob([csvString], { type: 'text/csv' })
+                                const url = window.URL.createObjectURL(blob)
+                                const a = document.createElement('a')
+                                a.href = url
+                                a.download = `selected-leads-${new Date().toISOString().split('T')[0]}.csv`
+                                a.click()
+                                window.URL.revokeObjectURL(url)
+                              }}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                              Export Selected
+                            </button>
+                            <button
+                              onClick={() => setSelectedLeads([])}
+                              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            >
+                              Clear Selection
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="text-center py-12">
                     <Users className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">No leads yet</h3>
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">
+                      {Object.values(leadFilters).some(filter => filter) ? 'No leads match your filters' : 'No leads yet'}
+                    </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                      Leads will appear here when visitors register through the enrollment form.
+                      {Object.values(leadFilters).some(filter => filter)
+                        ? 'Try adjusting your search criteria or filters.'
+                        : 'Leads will appear here when visitors register through the enrollment form.'
+                      }
                     </p>
+                    {Object.values(leadFilters).some(filter => filter) && (
+                      <div className="mt-4">
+                        <button
+                          onClick={resetFilters}
+                          className="inline-flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                          <span>Clear All Filters</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
